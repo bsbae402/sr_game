@@ -12,10 +12,9 @@ public class menuTransitionBouncerScript : MonoBehaviour {
         initScale = transform.localScale;
     }
 
-    void FixedUpdate()
-    {
+    void FixedUpdate() {
         transform.localScale = new Vector3(initScale.x + bouncer.x * (float)System.Math.Sin(Time.time),
-            initScale.y + bouncer.x * (float)System.Math.Sin(Time.time));
+            initScale.y + bouncer.y * (float)System.Math.Sin(Time.time));
 
     }
 }

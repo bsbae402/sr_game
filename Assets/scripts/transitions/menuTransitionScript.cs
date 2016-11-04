@@ -16,8 +16,9 @@ public class menuTransitionScript : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != currentScene)
-            StartCoroutine(disappear());
+        if (appeared)
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != currentScene)
+                StartCoroutine(disappear());
     }
 
     public void loadAppear(string scene) {
@@ -56,6 +57,7 @@ public class menuTransitionScript : MonoBehaviour {
             Destroy(slides[i]);
         }
         yield return new WaitForSeconds(1f);
+        Destroy(transform.parent.gameObject);
         Destroy(gameObject);
     }
 }
