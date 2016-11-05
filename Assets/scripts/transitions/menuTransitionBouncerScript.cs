@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class menuTransitionBouncerScript : MonoBehaviour {
+    // This class is also trivial.  It's the same as that background bouncer, but for canvas sprites
     
     public Vector2 bouncer = new Vector2(0, 0);
 

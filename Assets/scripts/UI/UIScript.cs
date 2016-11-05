@@ -3,6 +3,7 @@ using System.Collections;
 
 public class UIScript : MonoBehaviour {
 
+    // We'll implement this later
     UIHealthScript health;
 
 	// Use this for initialization
@@ -11,10 +12,6 @@ public class UIScript : MonoBehaviour {
 	}
 
     void Update() {
-        if(Input.GetKeyDown("left shift")) {
-            health.health -= 25;
-            if (health.health < 0)
-                health.health = 100;
-        }
+        
     }
 }

@@ -7,6 +7,9 @@ TagManager:
   - transition
   - loader
   - levelList
+  - levelInit
+  - act
+  - miniui
   layers:
   - Default
   - TransparentFX

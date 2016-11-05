@@ -3,7 +3,15 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class menuTransitionScript : MonoBehaviour {
+    // The great reusable transition
+    // This allows us to cutely move between our three scenes
+    // Every scene has one
+    // We have to add loading images later
 
+    // We keep our slides recorded for access ease
+    // The amount of slides is hardcoded, please change functions when adding more
+    // The current scene is recorded so when we change scenes, the loading screen can disappear and die
+    // Appeared: In order to prevent any weird stuff, each transition can only be called once
     public GameObject[] slides;
     string currentScene;
     bool appeared;
@@ -15,7 +23,7 @@ public class menuTransitionScript : MonoBehaviour {
         currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
     }
 
-    void FixedUpdate() {
+    void Update() {
         if (appeared)
             if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != currentScene)
                 StartCoroutine(disappear());

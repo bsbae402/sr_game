@@ -507,7 +507,7 @@ GameObject:
   - 114: {fileID: 432749041}
   m_Layer: 0
   m_Name: Level (1)
-  m_TagString: Untagged
+  m_TagString: levelInit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -524,7 +524,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelName: Velvet's First Rush!
-  sceneName: LevelTutorial
+  sceneName: Level
   description: Carrot cake is finally on sale!  Unfortunately, Velvet lives pretty
     far away from the market, and needs to take to the alleys.
   obstacles: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -536,7 +536,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 432749040}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 485.68225, y: 227.90128, z: -10.4375}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
