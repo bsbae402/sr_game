@@ -21,18 +21,4 @@ public class levelInitScript : MonoBehaviour {
 
 	}
 
-    // Remove later
-    // We have to put this somewhere else
-    public void EndGame(int status) {
-        switch (status) {
-            case 0:
-                GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
-                    loadAppear("MenuAvenue");
-                break;
-            default: // Will process score later on
-                //SceneManager.LoadScene("MainMenu");
-                break;
-        }
-    }
-
 }

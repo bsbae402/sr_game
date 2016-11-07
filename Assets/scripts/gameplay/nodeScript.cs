@@ -7,6 +7,7 @@ public class nodeScript : MonoBehaviour {
     1 = Act Exit
     2 = Act-Type-0 Turn Right
     3 = Act-Type-0 Turn Left
+    4 = Act-Type-1 Stop-Until-Obstacle-Destroyed
     99 = Stage Complete
     ***********************/
     public int nodeType;

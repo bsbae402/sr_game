@@ -9,7 +9,9 @@ TagManager:
   - levelList
   - levelInit
   - act
-  - miniui
+  - stats
+  - perf
+  - money
   layers:
   - Default
   - TransparentFX

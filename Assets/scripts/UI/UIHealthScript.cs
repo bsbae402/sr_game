@@ -14,6 +14,10 @@ public class UIHealthScript : MonoBehaviour {
         rotateCounter = 0;
     }
 
+    public void hit(int damage) {
+        health -= damage;
+    }
+
     // PURPOSELY USED Update()
     // It ignores the game speed
 	void Update () {

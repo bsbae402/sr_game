@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEditor;
 
 public class levelConstructionScript : MonoBehaviour {
 
@@ -12,8 +11,8 @@ public class levelConstructionScript : MonoBehaviour {
     public Transform[] tileBase;
     // Possible values passed on by the level init obstacles, as well as the corresponding act tiles
     // Add more as we make more minigames
-    int[] validTiles =  { -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    int[] CorrespondingTile = { -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    int[] validTiles =  {       -1,  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+    int[] CorrespondingTile = { -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0,  -1,  1,  1,  1,  1,  1,  1,  1,  1,  1 };
 
     [HideInInspector]
     // Where the tiles themselves are held
@@ -26,14 +25,13 @@ public class levelConstructionScript : MonoBehaviour {
     // Keeps track of where the next tile is placed; not every tile is the same size
     float lastTilePosition = 0f;
 
-    // Controls movement speed through the stage
-    // I'm not sure why this is placed here
-    // It should probably be static
-    float speed = 0.4f;
-
     // Determines whether the stage should start moving
     // We want to make sure everything is set up first
     bool started = false;
+
+    // The speed in which the stage moves
+    // It should also be used to change how fast arrows move
+    public float speed = 0.4f;
 
 	// Use for initialization
 	void Start () {
@@ -47,7 +45,7 @@ public class levelConstructionScript : MonoBehaviour {
             return;
         }
         tileData = levelData.GetComponent<levelInitScript>().obstacles;
-        tiles = new Transform[tileData.Length];
+        tiles = new Transform[tileData.Length + 1];
         constructLevel();
 	}
 	
@@ -59,6 +57,10 @@ public class levelConstructionScript : MonoBehaviour {
             tiles[i].transform.position += new Vector3(0, 0, lastTilePosition);
             lastTilePosition += tiles[i].GetComponent<actScript>().actLength;
         }
+        var finishTile = Instantiate(tileBase[tileBase.Length - 1]) as Transform;
+        tiles[tiles.Length - 1] = finishTile;
+        tiles[tiles.Length - 1].parent = this.transform;
+        tiles[tiles.Length - 1].transform.position += new Vector3(0, 0, lastTilePosition); 
         StartCoroutine(levelStart());
     }
 
@@ -81,7 +83,12 @@ public class levelConstructionScript : MonoBehaviour {
         // Checks for complete randomization or partial randomization
         // t == -1 : Choose any tile at all from any act variant
         // t % 10 == 0 : Choose any variant from the act
-        if (!ArrayUtility.Contains(validTiles, t))
+        // We can't use ArrayUtility for searching because UnityEditor is a dumb library
+        bool found = false;
+        for (int i = 0; i < validTiles.Length; i++)
+            if (validTiles[i] == t)
+                found = true;
+        if (!found)
             t = -1;
         if (t == -1)
             t = Random.Range(0, 9);
@@ -89,9 +96,20 @@ public class levelConstructionScript : MonoBehaviour {
             t += (int)(Random.Range(1, 9));
 
         // Creates and sends the new tile
-        var levelTile = Instantiate(
-            tileBase[CorrespondingTile[ArrayUtility.IndexOf<int>(validTiles, t)]]) as Transform;
+        // We can't use ArrayUtility for searching because UnityEditor is a dumb library
+        int index = 0;
+        for (int i = 0; i < validTiles.Length; i++)
+            if (validTiles[i] == t)
+                index = i;
+        var levelTile = Instantiate(tileBase[CorrespondingTile[index]]) as Transform;
         return levelTile;
+    }
+
+    IEnumerator finishStage() {
+        yield return new WaitForSeconds(3f);
+        GameObject.FindGameObjectWithTag("stats").GetComponent<playerStats>().updateNeeded = true;
+        GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
+            loadAppear("MenuAvenue");
     }
 
 	// Again, using FixedUpdate to update as often as the game speed
@@ -99,12 +117,30 @@ public class levelConstructionScript : MonoBehaviour {
         // Don't update anything until we've started
         if (!started)
             return;
+        // Don't update anything if the stage is over
+        if (speed < -100f)
+            return;
 
-        transform.position -= Vector3.Normalize(player.GetComponent<playerScript>().angle) * speed;
-        if (speed < 0.4f)
-            speed += 0.01f;
-        if (speed > 0.4f)
-            speed = 0.4f;
+        if (player.GetComponent<playerScript>().stop == 0) {
+            transform.position -= Vector3.Normalize(player.GetComponent<playerScript>().angle) * speed;
+            if (speed < 0.4f)
+                speed += 0.005f;
+            if (speed > 0.4f)
+                speed = 0.4f;
+        } else if (player.GetComponent<playerScript>().stop == 99) {
+            speed = -1000f;
+            StartCoroutine(finishStage());
+            return;
+        } else {
+            speed = 0f;
+        }
+
+        // The player has been hit, so they will slow down
+        if(player.GetComponent<playerScript>().hit) {
+            speed = 0f;
+            player.GetComponent<playerScript>().hit = false;
+        }
+        player.GetComponent<playerScript>().movementSpeed = speed;
 
         // We don't want to check every single act to see if the player has reached the first node
         // So we only check the proceeding one
@@ -113,10 +149,12 @@ public class levelConstructionScript : MonoBehaviour {
         if (act + 1 < tiles.Length) {
             if (Vector3.Distance(tiles[act + 1].GetComponent<actScript>().firstNode.transform.position, 
                 player.transform.position) < speed ) {
+                player.transform.position = tiles[act + 1].GetComponent<actScript>().firstNode.transform.position;
                 if (act >= 0)
                     tiles[act].GetComponent<actScript>().passAway();
                 player.GetComponent<playerScript>().currentAct = act + 1;
                 player.GetComponent<playerScript>().actType = tiles[act + 1].GetComponent<actScript>().actType;
+                player.GetComponent<playerScript>().currentNode = tiles[act + 1].GetComponent<actScript>().firstNode;
                 player.GetComponent<playerScript>().nextNode =
                     tiles[act + 1].GetComponent<actScript>().firstNode.GetComponent<nodeScript>().nextNode;
                 player.GetComponent<playerScript>().minigameOverhead.GetComponent<minigameOverheadScript>().

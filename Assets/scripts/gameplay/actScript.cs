@@ -7,6 +7,11 @@ public class actScript : MonoBehaviour {
     // the time limit of the minigame, its first node, and the ambiguous
     // gameData that's completely situational depending on what the 
     // minigame is
+    /*******ACT TYPES*******
+    0 = Alleyway Navigation
+    1 = Beat-Em-Up Obstacle
+    99 = Stage Complete
+    ***********************/
     public int actType;
     public int actLength;
     public int timeLimit;

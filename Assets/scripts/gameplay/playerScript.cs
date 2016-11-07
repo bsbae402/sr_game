@@ -8,6 +8,7 @@ public class playerScript : MonoBehaviour {
     public GameObject nextNode;
     public GameObject currentNode;
 
+    UIScript UI;
     // The super-messy minigameOverhead is a child to the player
     // Again, a lot of consistent objects are used as public fields because it won't matter anyway
     public GameObject minigameOverhead;
@@ -29,27 +30,61 @@ public class playerScript : MonoBehaviour {
     // Our camera kept record of for calling ease
     Camera eyes;
 
+    [HideInInspector]
+    // levelConstruction's record of the movement speed will slow down
+    // when it detects that the player has been hit
+    public bool hit = false;
+    [HideInInspector]
+    // Unfortunately we need to keep this in order for node detection to work
+    // levelConstruction will have to continously update this value
+    public float movementSpeed;
+    [HideInInspector]
+    // Detects whether the movement should stop or not
+    // It's used in minigames such as Beat-em-up
+    public int stop = 1;
+
     // Use this for initialization
     void Start () {
+        UI = GetComponentInChildren<UIScript>();
         eyes = GetComponentInChildren<Camera>();
         currentAct = -1;
         actType = -1;
         angle = GetComponentInChildren<Camera>().transform.forward;
         gameData = new int[10];
 	}
+
+    public void getHit(int damage) {
+        hit = true;
+        UI.hit(damage);
+    }
 	
     // FixedUpdate moves with the game speed
 	void FixedUpdate () {
+        if (stop == 99)
+            return;
+        // The stage has ended at this point
+        if (nextNode.GetComponent<nodeScript>().nodeType == 99) { 
+            if (Vector3.Distance(nextNode.transform.position, transform.position) < movementSpeed) {
+                transform.position = nextNode.transform.position;
+                stop = 99;
+            }
+        }
         // We'll detect collisions with nodes within the same act in player
         // Collisions with nodes in different acts are handled in levelConstruction
         // Updates desired angle, and the current and next nodes for the player
-        if (nextNode.GetComponent<nodeScript>().nodeType != 1) {
-	        if (Vector3.Distance(nextNode.transform.position, transform.position) < 0.1) {
+        else if (nextNode.GetComponent<nodeScript>().nodeType != 1) {
+	        if (Vector3.Distance(nextNode.transform.position, transform.position) < movementSpeed) {
                 //Debug.Log("From player: " + nextNode.name);
+                transform.position = nextNode.transform.position;
                 currentNode = nextNode;
                 nextNode = nextNode.GetComponent<nodeScript>().nextNode;
                 angle = currentNode.transform.forward;
+                // If we encounter the beat-em-up node identifier
+                if (currentNode.GetComponent<nodeScript>().nodeType == 4)
+                    stop = 1;
             }
+        } else {
+            UI.updateScore(minigameOverhead.GetComponent<minigameOverheadScript>().score.GetComponent<performanceScript>().score);
         }
         // Makes sure the player is facing the right way during movement
         if(currentNode != null)
@@ -57,5 +92,17 @@ public class playerScript : MonoBehaviour {
                 eyes.transform.rotation,
                 currentNode.transform.rotation,
                 Time.deltaTime * 10);
+    }
+
+    // We need to do key input in Update() because it updates every frame
+    void Update() { 
+        if (actType == 1) { 
+            if (currentNode.GetComponent<nodeScript>().nodeType == 4) { 
+                if (Input.anyKeyDown) {
+                    int[] feedback = { 10 };
+                    minigameOverhead.GetComponent<minigameOverheadScript>().miniFeedback(feedback);
+                }
+            }
+        }
     }
 }
