@@ -28,6 +28,10 @@ public class UIScript : MonoBehaviour {
         health.hit(damage);
     }
 
+    public int getHealth() {
+        return health.health;
+    }
+
     // This is called by the player to update the text for the score
     // A lot more went into this than needed because of the slow score increase
     public void updateScore(int score) {

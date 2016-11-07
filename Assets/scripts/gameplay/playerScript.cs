@@ -60,9 +60,11 @@ public class playerScript : MonoBehaviour {
 	
     // FixedUpdate moves with the game speed
 	void FixedUpdate () {
-        if (stop == 99)
+        if (stop == 99 || stop == -99)
             return;
         // The stage has ended at this point
+        if (UI.getHealth() <= 0)
+            stop = -99;
         if (nextNode.GetComponent<nodeScript>().nodeType == 99) { 
             if (Vector3.Distance(nextNode.transform.position, transform.position) < movementSpeed) {
                 transform.position = nextNode.transform.position;

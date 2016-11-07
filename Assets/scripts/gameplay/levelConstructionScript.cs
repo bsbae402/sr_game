@@ -12,7 +12,7 @@ public class levelConstructionScript : MonoBehaviour {
     // Possible values passed on by the level init obstacles, as well as the corresponding act tiles
     // Add more as we make more minigames
     int[] validTiles =  {       -1,  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
-    int[] CorrespondingTile = { -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0,  -1,  1,  1,  1,  1,  1,  1,  1,  1,  1 };
+    int[] CorrespondingTile = { -1, -1, 0, 1, 0, 1, 0, 1, 0, 1, 0,  -1,  2,  2,  2,  2,  2,  2,  2,  2,  2 };
 
     [HideInInspector]
     // Where the tiles themselves are held
@@ -31,6 +31,7 @@ public class levelConstructionScript : MonoBehaviour {
 
     // The speed in which the stage moves
     // It should also be used to change how fast arrows move
+    [HideInInspector]
     public float speed = 0.4f;
 
 	// Use for initialization
@@ -111,6 +112,12 @@ public class levelConstructionScript : MonoBehaviour {
         GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
             loadAppear("MenuAvenue");
     }
+    IEnumerator failStage() { 
+        yield return new WaitForSeconds(2f);
+        Destroy(GameObject.FindGameObjectWithTag("perf"));
+        GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
+            loadAppear("MenuAvenue");
+    }
 
 	// Again, using FixedUpdate to update as often as the game speed
 	void FixedUpdate () {
@@ -130,6 +137,10 @@ public class levelConstructionScript : MonoBehaviour {
         } else if (player.GetComponent<playerScript>().stop == 99) {
             speed = -1000f;
             StartCoroutine(finishStage());
+            return;
+        } else if (player.GetComponent<playerScript>().stop == -99) {
+            speed = -1000f;
+            StartCoroutine(failStage());
             return;
         } else {
             speed = 0f;
