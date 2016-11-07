@@ -108,7 +108,8 @@ public class levelConstructionScript : MonoBehaviour {
 
     IEnumerator finishStage() {
         yield return new WaitForSeconds(3f);
-        GameObject.FindGameObjectWithTag("stats").GetComponent<playerStats>().updateNeeded = true;
+        if(GameObject.FindGameObjectWithTag("stats") != null)
+            GameObject.FindGameObjectWithTag("stats").GetComponent<playerStats>().updateNeeded = true;
         GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
             loadAppear("MenuAvenue");
     }
