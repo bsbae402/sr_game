@@ -28,33 +28,33 @@ public class arrowScript : MonoBehaviour {
 
     // Calculate the score of the arrow press timing, and send the information back to the overhead
     void calculateScore(float dist) {
-        if (Mathf.Abs(200 - transform.localPosition.y) > 200)
+        if (Mathf.Abs(200 - transform.localPosition.y) > 100)
             return;
         // 0 - The actual rating of the press i.e. Perfect, Great, Good, Almost, Boo
         // 1 - The score to add to the act performance in minigameOverhead
         int[] feedback = new int[2];
         // Marvelous
-        if (dist < 30) {
+        if (dist < 15) {
             feedback[0] = 0;
             feedback[1] = 100;
         }
         // Perfect
-        else if (dist < 50) { 
+        else if (dist < 25) { 
             feedback[0] = 1;
             feedback[1] = 66;
         }
         // Great
-        else if (dist < 100) { 
+        else if (dist < 50) { 
             feedback[0] = 2;
             feedback[1] = 33;
         }
         // Good
-        else if (dist < 150) { 
+        else if (dist < 75) { 
             feedback[0] = 3;
             feedback[1] = 10;
         }
         // Almost
-        else if (dist < 200) {
+        else if (dist < 100) {
             feedback[0] = 4;
             feedback[1] = 0;
         }

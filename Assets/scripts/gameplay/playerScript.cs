@@ -64,7 +64,7 @@ public class playerScript : MonoBehaviour {
         UI.hit(damage);
     }
     public void getHit(int damage) {
-        getHit(damage, 1.5f);
+        getHit(damage, 0f);
     }
     IEnumerator invincibility(float time) {
         yield return new WaitForSeconds(time);
