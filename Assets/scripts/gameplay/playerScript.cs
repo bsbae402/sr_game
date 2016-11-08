@@ -33,6 +33,7 @@ public class playerScript : MonoBehaviour {
     // levelConstruction's record of the movement speed will slow down
     // when it detects that the player has been hit
     public bool hit = false;
+    bool invincible = false;
     [HideInInspector]
     // Unfortunately we need to keep this in order for node detection to work
     // levelConstruction will have to continously update this value
@@ -40,7 +41,9 @@ public class playerScript : MonoBehaviour {
     [HideInInspector]
     // Detects whether the movement should stop or not
     // It's used in minigames such as Beat-em-up
-    public int stop = 1;
+    public int stop = 0;
+    // Used to process a failed stage inside update, so that update won't call it a million times
+    public bool failedAct = false;
 
     // Use this for initialization
     void Start () {
@@ -52,11 +55,36 @@ public class playerScript : MonoBehaviour {
         gameData = new int[10];
 	}
 
-    public void getHit(int damage) {
+    public void getHit(int damage, float invincibleTime) { 
+        if (invincible)
+            return;
         hit = true;
+        invincible = true;
+        StartCoroutine(invincibility(invincibleTime));
         UI.hit(damage);
     }
-	
+    public void getHit(int damage) {
+        getHit(damage, 1.5f);
+    }
+    IEnumerator invincibility(float time) {
+        yield return new WaitForSeconds(time);
+        invincible = false;
+    }
+
+    // Called by level construction when we finish a minigame
+    // It's the only way to get it to call ONCE and only ONCE
+    public void finishAct() {
+        if (actType < 0)
+            return;
+        if (UI.timeLeft == 0) {
+            UI.requestCompletionImage(-1);
+            getHit(20);
+        } else
+            UI.requestCompletionImage(actType);
+        UI.updateScore(minigameOverhead.GetComponent<minigameOverheadScript>().
+            increaseScore((int)UI.timeLeft * 20));
+    }
+
     // FixedUpdate moves with the game speed
 	void FixedUpdate () {
         if (stop == 99 || stop == -99)
@@ -64,6 +92,8 @@ public class playerScript : MonoBehaviour {
         // The stage has ended at this point
         if (UI.getHealth() <= 0)
             stop = -99;
+
+        // Node Type 99 is the level completely finished
         if (nextNode.GetComponent<nodeScript>().nodeType == 99) { 
             if (Vector3.Distance(nextNode.transform.position, transform.position) < movementSpeed) {
                 transform.position = nextNode.transform.position;
@@ -84,11 +114,23 @@ public class playerScript : MonoBehaviour {
                 if (currentNode.GetComponent<nodeScript>().nodeType == 4)
                     stop = 1;
             }
-        } else {
-            if (stop == 0) {
-                UI.requestCompletionImage(actType);
-                UI.updateScore(minigameOverhead.GetComponent<minigameOverheadScript>().
-                    increaseScore((int)UI.timeLeft * 20));
+        } else { 
+            UI.decreaseTime = false;
+        }
+        // If an act runs out of time, they are supposed to unconditionally fail
+        // Some minigames, however, require more player interaction than others and
+        // therefore, the game needs to detect this
+        // We have problems with it running more than once, however..
+        if (UI.timeLeft == 0) {
+            if (failedAct)
+                return;
+            failedAct = true;
+            if (actType == 1) {
+                int[] feedback = { -200, 0 };
+                // Code 10000 : Shake current act's interactable obstacle
+                gameData[0] = 10000 + currentAct;
+                gameData[1] = 2;
+                minigameOverhead.GetComponent<minigameOverheadScript>().miniFeedback(feedback);
             }
         }
         // Makes sure the player is facing the right way during movement

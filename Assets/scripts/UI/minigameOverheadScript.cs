@@ -53,6 +53,9 @@ public class minigameOverheadScript : MonoBehaviour {
         }
         else if (currentAct == 1) {
             components[2].transform.localPosition += new Vector3(-800 / obstaclehealth, 0, 0);
+            if (feedbackData.Length == 2) {
+                components[2].transform.localPosition += new Vector3(-800, 0, 0);
+            }
             actPerformance += feedbackData[0];
             hitMark();
             if (components[2].transform.localPosition.x <= -800) {
@@ -60,6 +63,7 @@ public class minigameOverheadScript : MonoBehaviour {
                 actPerformance = 0;
                 transform.parent.parent.gameObject.GetComponent<playerScript>().stop = 0;
                 transform.parent.parent.gameObject.GetComponent<playerScript>().gameData[1] = 1;
+                transform.parent.GetComponent<UIScript>().decreaseTime = false;
             }
         }
     }

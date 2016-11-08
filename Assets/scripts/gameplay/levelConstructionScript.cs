@@ -147,10 +147,15 @@ public class levelConstructionScript : MonoBehaviour {
             speed = 0f;
         }
         
+        // GameData is completely arbitrary in the way that it'll pass data to levelConstruction
+        // I doubt I'll even remember what it does.
+        // Code {1xxxx} - The player wishes to interact with the data%10000th element of the act's interactable obstacles
+        // Code {1xxxx, 1} - The player wishes to remove the data%10000th element of the act's interactable obstacles
+        // Code {1xxxx, 2} - Same as previous, but the player failed the stage
         if (player.GetComponent<playerScript>().gameData[0] / 10000 == 1) {
             tiles[player.GetComponent<playerScript>().gameData[0] % 10000].GetComponent<actScript>().
                 interactWithObstacle(0);
-            if (player.GetComponent<playerScript>().gameData[1] == 1) {
+            if (player.GetComponent<playerScript>().gameData[1] >= 1) {
                 tiles[player.GetComponent<playerScript>().gameData[0] % 10000].GetComponent<actScript>().
                     removeObstacle(0);
                 System.Array.Clear(player.GetComponent<playerScript>().gameData, 0, 10);
@@ -171,19 +176,22 @@ public class levelConstructionScript : MonoBehaviour {
         if (act + 1 < tiles.Length) {
             if (Vector3.Distance(tiles[act + 1].GetComponent<actScript>().firstNode.transform.position, 
                 player.transform.position) < speed ) {
+                playerScript p = player.GetComponent<playerScript>();
+                p.finishAct();
                 player.transform.position = tiles[act + 1].GetComponent<actScript>().firstNode.transform.position;
                 if (act >= 0)
                     tiles[act].GetComponent<actScript>().passAway();
-                player.GetComponent<playerScript>().currentAct = act + 1;
-                player.GetComponent<playerScript>().actType = tiles[act + 1].GetComponent<actScript>().actType;
-                player.GetComponent<playerScript>().currentNode = tiles[act + 1].GetComponent<actScript>().firstNode;
-                player.GetComponent<playerScript>().nextNode =
-                    tiles[act + 1].GetComponent<actScript>().firstNode.GetComponent<nodeScript>().nextNode;
-                System.Array.Clear(player.GetComponent<playerScript>().gameData, 0, 10);
-                player.GetComponent<playerScript>().minigameOverhead.GetComponent<minigameOverheadScript>().
+                p.failedAct = false;
+                p.UI.decreaseTime = true;
+                p.currentAct = act + 1;
+                p.actType = tiles[act + 1].GetComponent<actScript>().actType;
+                p.currentNode = tiles[act + 1].GetComponent<actScript>().firstNode;
+                p.nextNode = tiles[act + 1].GetComponent<actScript>().firstNode.GetComponent<nodeScript>().nextNode;
+                System.Array.Clear(p.gameData, 0, 10);
+                p.minigameOverhead.GetComponent<minigameOverheadScript>().
                     newAct(tiles[act + 1].GetComponent<actScript>().actType, 
                     tiles[act + 1].GetComponent<actScript>().gameData);
-                player.GetComponent<playerScript>().UI.timeLeft = tiles[act + 1].GetComponent<actScript>().timeLimit;
+                p.UI.timeLeft = tiles[act + 1].GetComponent<actScript>().timeLimit;
             }
         }
 	}

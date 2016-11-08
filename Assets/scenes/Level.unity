@@ -752,6 +752,11 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114000010684450190, guid: 55542cfdd86205d41837a6860a18e93f,
+        type: 2}
+      propertyPath: timeLimit
+      value: -1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 55542cfdd86205d41837a6860a18e93f, type: 2}
   m_IsPrefabParent: 0
@@ -1403,6 +1408,7 @@ MonoBehaviour:
   Overhead: {fileID: 582009963}
   Completion: {fileID: 1531717274}
   timeLeft: 0
+  decreaseTime: 0
 --- !u!1 &1531717274
 GameObject:
   m_ObjectHideFlags: 0
@@ -1994,6 +2000,7 @@ MonoBehaviour:
   hit: 0
   movementSpeed: 0
   stop: 0
+  failedAct: 0
 --- !u!1001 &2067715852
 Prefab:
   m_ObjectHideFlags: 0

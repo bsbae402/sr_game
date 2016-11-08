@@ -13,6 +13,7 @@ public class UIScript : MonoBehaviour {
 
     [HideInInspector]
     public float timeLeft;
+    public bool decreaseTime;
 
     // All this just for aesthetic purposes
     int currentScore;
@@ -26,6 +27,7 @@ public class UIScript : MonoBehaviour {
         scoreincrement = 0;
         score = 0;
         scoreUpdate = false;
+        decreaseTime = true;
         health = GetComponentInChildren<UIHealthScript>();
 	}
 
@@ -39,6 +41,9 @@ public class UIScript : MonoBehaviour {
 
     public void requestCompletionImage(int actType) { 
         switch (actType) {
+            case -1:
+                Completion.GetComponent<completionImageScript>().spawnCompletion("VelvetMinigameFailed");
+                break;
             case 0:
                 Completion.GetComponent<completionImageScript>().spawnCompletion("VelvetMinigameComplete-0");
                 break;
@@ -61,10 +66,12 @@ public class UIScript : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (timeLeft > 0)
-            timeLeft -= Time.fixedDeltaTime;
-        else
-            timeLeft = 0;
+        if (decreaseTime) {
+            if (timeLeft > 0)
+                timeLeft -= Time.fixedDeltaTime;
+            else
+                timeLeft = 0;
+        }
         TimeText.GetComponent<Text>().text = "" + timeLeft.ToString("n2");
         // If the score needs updating, it will set our score slowly to where it needs to be
         // This is so much code just for updating the score..
