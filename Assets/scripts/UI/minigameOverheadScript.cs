@@ -15,14 +15,19 @@ public class minigameOverheadScript : MonoBehaviour {
     // Hard coded piece for the beat-em-up minigame
     int obstaclehealth;
 
+    // Not that important
+    // Transforms used for decoration of the level
+    /****AESTHETIC TYPES****
+    0 = Overhead minigame appearance puffs
+    ***********************/
+    public RectTransform[] aesthetics;
+
     // We keep a copy of the current type of minigame we're in
     // So we can handle feedback in a single function
     int currentAct;
     // This is how well the player accomplishes each minigame
     public int actPerformance = 0;
     // This is how well the player does as a whole for the level
-    // REMOVE LATER - This will be placed into an object perserved for going back to MenuAvenue
-    // public int score = 0;
     public GameObject score;
 
     // Sets all the components invisible before the selection of a new minigame
@@ -49,11 +54,25 @@ public class minigameOverheadScript : MonoBehaviour {
         else if (currentAct == 1) {
             components[2].transform.localPosition += new Vector3(-800 / obstaclehealth, 0, 0);
             actPerformance += feedbackData[0];
+            hitMark();
             if (components[2].transform.localPosition.x <= -800) {
                 score.GetComponent<performanceScript>().score += actPerformance;
                 actPerformance = 0;
                 transform.parent.parent.gameObject.GetComponent<playerScript>().stop = 0;
+                transform.parent.parent.gameObject.GetComponent<playerScript>().gameData[1] = 1;
             }
+        }
+    }
+
+    void hitMark() {
+        var hitMarker = Instantiate(aesthetics[1]) as RectTransform;
+        hitMarker.SetParent(GetComponent<RectTransform>());
+    }
+
+    void puffOverhead() {
+        for (int i = 0; i < 15; i++) {
+            var puff = Instantiate(aesthetics[0]) as RectTransform;
+            puff.SetParent(GetComponent<RectTransform>());
         }
     }
 
@@ -65,6 +84,7 @@ public class minigameOverheadScript : MonoBehaviour {
         currentAct = actType;
         actPerformance = 0;
         resetComponents();
+        puffOverhead();
         // Alleyway-Navigation
         if (actType == 0) {
             components[0].GetComponent<CanvasGroup>().alpha = 1;
@@ -93,9 +113,17 @@ public class minigameOverheadScript : MonoBehaviour {
             // Show the health bar
             components[1].GetComponent<CanvasGroup>().alpha = 1;
             components[2].GetComponent<CanvasGroup>().alpha = 1;
-            // Set actPerformance as total health of the obstacle
+            // Set obstaclehealth as total health of the obstacle
             obstaclehealth = gameData[0];
         }
+    }
+
+    public int increaseScore(int scoring) {
+        score.GetComponent<performanceScript>().score += scoring;
+        return score.GetComponent<performanceScript>().score;
+    }
+    public int getScore() {
+        return score.GetComponent<performanceScript>().score;
     }
 
     void FixedUpdate() {

@@ -8,19 +8,18 @@ public class playerScript : MonoBehaviour {
     public GameObject nextNode;
     public GameObject currentNode;
 
-    UIScript UI;
+    public UIScript UI;
     // The super-messy minigameOverhead is a child to the player
     // Again, a lot of consistent objects are used as public fields because it won't matter anyway
     public GameObject minigameOverhead;
 
-    // I can't remember why I have this
-    // The current act may have to pass information to the player?
+    // Used to send information between the player and the level
     [HideInInspector]
     public int[] gameData;
     // The current act (as in the tiles[] index) the player is in
     [HideInInspector]
     public int currentAct;
-    // The current act (as in the type of minigame) the playe ris in
+    // The current act (as in the type of minigame) the player is in
     [HideInInspector]
     public int actType;
     // The desired angle the player wants to end up facing depending on the current node
@@ -86,7 +85,11 @@ public class playerScript : MonoBehaviour {
                     stop = 1;
             }
         } else {
-            UI.updateScore(minigameOverhead.GetComponent<minigameOverheadScript>().score.GetComponent<performanceScript>().score);
+            if (stop == 0) {
+                UI.requestCompletionImage(actType);
+                UI.updateScore(minigameOverhead.GetComponent<minigameOverheadScript>().
+                    increaseScore((int)UI.timeLeft * 20));
+            }
         }
         // Makes sure the player is facing the right way during movement
         if(currentNode != null)
@@ -102,6 +105,9 @@ public class playerScript : MonoBehaviour {
             if (currentNode.GetComponent<nodeScript>().nodeType == 4) { 
                 if (Input.anyKeyDown) {
                     int[] feedback = { 10 };
+                    // Code 10000 : Shake current act's interactable obstacle
+                    gameData[0] = 10000 + currentAct;
+                    gameData[1] = 0;
                     minigameOverhead.GetComponent<minigameOverheadScript>().miniFeedback(feedback);
                 }
             }

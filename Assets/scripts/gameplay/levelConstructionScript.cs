@@ -14,8 +14,8 @@ public class levelConstructionScript : MonoBehaviour {
     int[] validTiles =  {       -1,  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
     int[] CorrespondingTile = { -1, -1, 0, 1, 0, 1, 0, 1, 0, 1, 0,  -1,  2,  2,  2,  2,  2,  2,  2,  2,  2 };
 
-    [HideInInspector]
     // Where the tiles themselves are held
+    [HideInInspector]
     public Transform[] tiles;
     // Replicated from the level init obstacles
     int[] tileData;
@@ -146,6 +146,16 @@ public class levelConstructionScript : MonoBehaviour {
         } else {
             speed = 0f;
         }
+        
+        if (player.GetComponent<playerScript>().gameData[0] / 10000 == 1) {
+            tiles[player.GetComponent<playerScript>().gameData[0] % 10000].GetComponent<actScript>().
+                interactWithObstacle(0);
+            if (player.GetComponent<playerScript>().gameData[1] == 1) {
+                tiles[player.GetComponent<playerScript>().gameData[0] % 10000].GetComponent<actScript>().
+                    removeObstacle(0);
+                System.Array.Clear(player.GetComponent<playerScript>().gameData, 0, 10);
+            }
+        }
 
         // The player has been hit, so they will slow down
         if(player.GetComponent<playerScript>().hit) {
@@ -169,9 +179,11 @@ public class levelConstructionScript : MonoBehaviour {
                 player.GetComponent<playerScript>().currentNode = tiles[act + 1].GetComponent<actScript>().firstNode;
                 player.GetComponent<playerScript>().nextNode =
                     tiles[act + 1].GetComponent<actScript>().firstNode.GetComponent<nodeScript>().nextNode;
+                System.Array.Clear(player.GetComponent<playerScript>().gameData, 0, 10);
                 player.GetComponent<playerScript>().minigameOverhead.GetComponent<minigameOverheadScript>().
                     newAct(tiles[act + 1].GetComponent<actScript>().actType, 
                     tiles[act + 1].GetComponent<actScript>().gameData);
+                player.GetComponent<playerScript>().UI.timeLeft = tiles[act + 1].GetComponent<actScript>().timeLimit;
             }
         }
 	}

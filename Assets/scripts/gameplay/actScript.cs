@@ -17,6 +17,7 @@ public class actScript : MonoBehaviour {
     public int timeLimit;
     public GameObject firstNode;
     public int[] gameData;
+    public GameObject[] interactiveObstacles;
 
     // Saves some rendering time by destroying acts that we've completed
     public void passAway() {
@@ -25,6 +26,15 @@ public class actScript : MonoBehaviour {
     IEnumerator die() {
         yield return new WaitForSeconds(2f);
         Destroy(gameObject);
+    }
+
+    public void interactWithObstacle(int obstacle) {
+        if (interactiveObstacles[obstacle] != null)
+            interactiveObstacles[obstacle].GetComponent<obstacleScript>().interact();
+    }
+    public void removeObstacle(int obstacle) {
+        if (interactiveObstacles[obstacle] != null)
+            interactiveObstacles[obstacle].GetComponent<obstacleScript>().remove();
     }
 
 }

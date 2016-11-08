@@ -3077,9 +3077,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actType: 0
   actLength: 60
-  timeLimit: 10
+  timeLimit: 7
   firstNode: {fileID: 1000012856405666}
   gameData: 65000000cb000000cd000000d00000006d0000006f00000072000000d9000000
+  interactiveObstacles: []
 --- !u!114 &114000012067865990
 MonoBehaviour:
   m_ObjectHideFlags: 1
