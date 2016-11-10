@@ -12,7 +12,7 @@ public class levelConstructionScript : MonoBehaviour {
     // Possible values passed on by the level init obstacles, as well as the corresponding act tiles
     // Add more as we make more minigames
     int[] validTiles =  {       -1,  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
-    int[] CorrespondingTile = { -1, -1, 0, 1, 0, 1, 0, 1, 0, 1, 0,  -1,  2,  2,  2,  2,  2,  2,  2,  2,  2 };
+    int[] CorrespondingTile = { -1, -1, 0, 1, 2, 3, 4, 1, 2, 3, 4,  -1,  2,  2,  2,  2,  2,  2,  2,  2,  2 };
 
     // Where the tiles themselves are held
     [HideInInspector]
