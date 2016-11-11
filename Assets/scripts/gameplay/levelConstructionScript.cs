@@ -12,7 +12,7 @@ public class levelConstructionScript : MonoBehaviour {
     // Possible values passed on by the level init obstacles, as well as the corresponding act tiles
     // Add more as we make more minigames
     int[] validTiles =  {       -1,  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
-    int[] CorrespondingTile = { -1, -1, 0, 1, 0, 1, 0, 1, 0, 1, 0,  -1,  2,  2,  2,  2,  2,  2,  2,  2,  2 };
+    int[] CorrespondingTile = { -1, -1, 0, 1, 2, 3, 0, 1, 2, 3, 0,  -1,  4,  4,  4,  4,  4,  4,  4,  4,  4 };
 
     // Where the tiles themselves are held
     [HideInInspector]
@@ -129,8 +129,8 @@ public class levelConstructionScript : MonoBehaviour {
         if (speed < -100f)
             return;
 
+        transform.position -= Vector3.Normalize(player.GetComponent<playerScript>().angle) * speed;
         if (player.GetComponent<playerScript>().stop == 0) {
-            transform.position -= Vector3.Normalize(player.GetComponent<playerScript>().angle) * speed;
             if (speed < 0.4f)
                 speed += 0.005f;
             if (speed > 0.4f)
