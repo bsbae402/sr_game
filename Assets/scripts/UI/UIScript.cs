@@ -9,7 +9,7 @@ public class UIScript : MonoBehaviour {
     public GameObject TimeText;
     public GameObject ScoreText;
     public GameObject Overhead;
-    public GameObject Completion;
+    completionImageScript Completion;
 
     [HideInInspector]
     public float timeLeft;
@@ -29,7 +29,8 @@ public class UIScript : MonoBehaviour {
         scoreUpdate = false;
         decreaseTime = true;
         health = GetComponentInChildren<UIHealthScript>();
-	}
+        Completion = GetComponentInChildren<completionImageScript>();
+    }
 
     public void hit(int damage) {
         health.hit(damage);
@@ -42,13 +43,13 @@ public class UIScript : MonoBehaviour {
     public void requestCompletionImage(int actType) { 
         switch (actType) {
             case -1:
-                Completion.GetComponent<completionImageScript>().spawnCompletion("VelvetMinigameFailed");
+                Completion.spawnCompletion("VelvetMinigameFailed");
                 break;
             case 0:
-                Completion.GetComponent<completionImageScript>().spawnCompletion("VelvetMinigameComplete-0");
+                Completion.spawnCompletion("VelvetMinigameComplete-0");
                 break;
             case 1:
-                Completion.GetComponent<completionImageScript>().spawnCompletion("VelvetMinigameComplete-1");
+                Completion.spawnCompletion("VelvetMinigameComplete-1");
                 break;
         }
     }

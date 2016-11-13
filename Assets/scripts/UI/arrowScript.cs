@@ -59,7 +59,7 @@ public class arrowScript : MonoBehaviour {
             feedback[1] = 0;
         }
         hit = true;
-        GetComponentInParent<minigameOverheadScript>().miniFeedback(feedback);
+        minigameOverheadScript.instance.miniFeedback(feedback);
         if (dist < 50) {
             Destroy(gameObject);
             audioManagerScript.instance.playfxSound(9);
@@ -94,8 +94,7 @@ public class arrowScript : MonoBehaviour {
 
         // The arrow rises and also fades into existance for a slick interface
         GetComponent<RectTransform>().localPosition += 
-            new Vector3(0, GameObject.FindGameObjectWithTag("levelList").
-            GetComponent<levelConstructionScript>().speed * 10, 0);
+            new Vector3(0, levelConstructionScript.instance.speed * 10, 0);
         if (GetComponent<CanvasGroup>().alpha < 1)
             GetComponent<CanvasGroup>().alpha += 0.05f;
 
@@ -104,7 +103,7 @@ public class arrowScript : MonoBehaviour {
         if (200 - transform.localPosition.y < -100 && !hit) {
             // 5 - BOO, 10 - 10 Damage
             int[] feedback = { 5, 10 };
-            GetComponentInParent<minigameOverheadScript>().miniFeedback(feedback);
+            minigameOverheadScript.instance.miniFeedback(feedback);
             dead = true;
             StartCoroutine(die());
         }

@@ -3,6 +3,8 @@ using System.Collections;
 
 public class minigameOverheadScript : MonoBehaviour {
 
+    public static minigameOverheadScript instance = null;
+
     // The overhead pieces used for different minigames
     // Unfortunately there's no optimized and generalized algorithm for sorting them
     // We'll have to hardcode their usage, plus with additional minigames
@@ -30,6 +32,13 @@ public class minigameOverheadScript : MonoBehaviour {
     // This is how well the player does as a whole for the level
     public GameObject score;
 
+    void Awake() {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
+    }
+
     // Sets all the components invisible before the selection of a new minigame
     void resetComponents() {
         for (int i = 0; i < components.Length; i++)
@@ -45,7 +54,7 @@ public class minigameOverheadScript : MonoBehaviour {
         // Arrows provide feedback for the alleyway navigation minigame
         if (currentAct == 0) {
             if (feedbackData[0] == 5) {
-                transform.parent.parent.gameObject.GetComponent<playerScript>().getHit(feedbackData[1]);
+                playerScript.instance.getHit(feedbackData[1]);
                 return;
             }
             score.GetComponent<performanceScript>().score += feedbackData[1];
@@ -61,9 +70,9 @@ public class minigameOverheadScript : MonoBehaviour {
             if (components[2].transform.localPosition.x <= -800) {
                 score.GetComponent<performanceScript>().score += actPerformance;
                 actPerformance = 0;
-                transform.parent.parent.gameObject.GetComponent<playerScript>().stop = 0;
-                transform.parent.parent.gameObject.GetComponent<playerScript>().gameData[1] = 1;
-                transform.parent.GetComponent<UIScript>().decreaseTime = false;
+                playerScript.instance.stop = 0;
+                playerScript.instance.gameData[1] = 1;
+                playerScript.instance.UI.decreaseTime = false;
             }
         }
     }

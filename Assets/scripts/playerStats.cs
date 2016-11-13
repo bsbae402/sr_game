@@ -35,6 +35,7 @@ public class playerStats : MonoBehaviour {
 	void Update () {
 	    if (updateNeeded) { 
             if(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MenuAvenue") {
+                audioManagerScript.instance.playMusic(0);
                 GameObject.FindGameObjectWithTag("money").GetComponent<Text>().text = "" + money;
                 GameObject.FindGameObjectWithTag("moneyEffect").GetComponent<moneyDisplayScript>().start();
                 StartCoroutine(updateStats());

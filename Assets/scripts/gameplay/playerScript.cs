@@ -3,6 +3,8 @@ using System.Collections;
 
 public class playerScript : MonoBehaviour {
 
+    public static playerScript instance = null;
+
     // Current nodes and next nodes of movement
     // Used for camera rotation
     public GameObject nextNode;
@@ -11,7 +13,6 @@ public class playerScript : MonoBehaviour {
     public UIScript UI;
     // The super-messy minigameOverhead is a child to the player
     // Again, a lot of consistent objects are used as public fields because it won't matter anyway
-    public GameObject minigameOverhead;
 
     // Used to send information between the player and the level
     [HideInInspector]
@@ -45,6 +46,13 @@ public class playerScript : MonoBehaviour {
     // Used to process a failed stage inside update, so that update won't call it a million times
     public bool failedAct = false;
 
+    void Awake() {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
+    }
+
     // Use this for initialization
     void Start () {
         UI = GetComponentInChildren<UIScript>();
@@ -54,6 +62,13 @@ public class playerScript : MonoBehaviour {
         angle = GetComponentInChildren<Camera>().transform.forward;
         gameData = new int[10];
 	}
+
+    public Vector3 getPosition() {
+        return transform.position;
+    }
+    public void setPosition(Vector3 pos) {
+        transform.position = pos;
+    }
 
     public void getHit(int damage, float invincibleTime) { 
         if (invincible)
@@ -82,8 +97,7 @@ public class playerScript : MonoBehaviour {
         } else
             UI.requestCompletionImage(actType);
         audioManagerScript.instance.playfxSound(5);
-        UI.updateScore(minigameOverhead.GetComponent<minigameOverheadScript>().
-            increaseScore((int)UI.timeLeft * 20));
+        UI.updateScore(minigameOverheadScript.instance.increaseScore((int)UI.timeLeft * 20));
     }
 
     // FixedUpdate moves with the game speed
@@ -134,7 +148,7 @@ public class playerScript : MonoBehaviour {
                 // Code 10000 : Shake current act's interactable obstacle
                 gameData[0] = 10000 + currentAct;
                 gameData[1] = 2;
-                minigameOverhead.GetComponent<minigameOverheadScript>().miniFeedback(feedback);
+                minigameOverheadScript.instance.miniFeedback(feedback);
             }
         }
         // Makes sure the player is facing the right way during movement
@@ -154,7 +168,7 @@ public class playerScript : MonoBehaviour {
                     // Code 10000 : Shake current act's interactable obstacle
                     gameData[0] = 10000 + currentAct;
                     gameData[1] = 0;
-                    minigameOverhead.GetComponent<minigameOverheadScript>().miniFeedback(feedback);
+                    minigameOverheadScript.instance.miniFeedback(feedback);
                     audioManagerScript.instance.playfxSound(Random.Range(0,4));
                 }
             }

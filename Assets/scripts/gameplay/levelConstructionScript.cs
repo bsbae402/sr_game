@@ -3,8 +3,9 @@ using System.Collections;
 
 public class levelConstructionScript : MonoBehaviour {
 
-    // A lot of variables are recorded as fields because the Level scene is used as every stage
+    public static levelConstructionScript instance = null;
 
+    // A lot of variables are recorded as fields because the Level scene is used as every stage
     public GameObject player;
     
     // Numberings for generating the stage; this allows us to use just one scene
@@ -33,6 +34,13 @@ public class levelConstructionScript : MonoBehaviour {
     // It should also be used to change how fast arrows move
     [HideInInspector]
     public float speed = 0.4f;
+
+    void Awake() {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
+    }
 
 	// Use for initialization
 	void Start () {
@@ -130,17 +138,17 @@ public class levelConstructionScript : MonoBehaviour {
         if (speed < -100f)
             return;
 
-        transform.position -= Vector3.Normalize(player.GetComponent<playerScript>().angle) * speed;
-        if (player.GetComponent<playerScript>().stop == 0) {
+        transform.position -= Vector3.Normalize(playerScript.instance.angle) * speed;
+        if (playerScript.instance.stop == 0) {
             if (speed < 0.4f)
                 speed += 0.005f;
             if (speed > 0.4f)
                 speed = 0.4f;
-        } else if (player.GetComponent<playerScript>().stop == 99) {
+        } else if (playerScript.instance.stop == 99) {
             speed = -1000f;
             StartCoroutine(finishStage());
             return;
-        } else if (player.GetComponent<playerScript>().stop == -99) {
+        } else if (playerScript.instance.stop == -99) {
             speed = -1000f;
             StartCoroutine(failStage());
             return;
@@ -153,46 +161,46 @@ public class levelConstructionScript : MonoBehaviour {
         // Code {1xxxx} - The player wishes to interact with the data%10000th element of the act's interactable obstacles
         // Code {1xxxx, 1} - The player wishes to remove the data%10000th element of the act's interactable obstacles
         // Code {1xxxx, 2} - Same as previous, but the player failed the stage
-        if (player.GetComponent<playerScript>().gameData[0] / 10000 == 1) {
-            tiles[player.GetComponent<playerScript>().gameData[0] % 10000].GetComponent<actScript>().
+        if (playerScript.instance.gameData[0] / 10000 == 1) {
+            tiles[playerScript.instance.gameData[0] % 10000].GetComponent<actScript>().
                 interactWithObstacle(0);
-            if (player.GetComponent<playerScript>().gameData[1] >= 1) {
-                tiles[player.GetComponent<playerScript>().gameData[0] % 10000].GetComponent<actScript>().
+            if (playerScript.instance.gameData[1] >= 1) {
+                tiles[playerScript.instance.gameData[0] % 10000].GetComponent<actScript>().
                     removeObstacle(0);
-                System.Array.Clear(player.GetComponent<playerScript>().gameData, 0, 10);
+                System.Array.Clear(playerScript.instance.gameData, 0, 10);
             }
         }
 
         // The player has been hit, so they will slow down
-        if(player.GetComponent<playerScript>().hit) {
+        if(playerScript.instance.hit) {
             speed = 0f;
-            player.GetComponent<playerScript>().hit = false;
+            playerScript.instance.hit = false;
         }
-        player.GetComponent<playerScript>().movementSpeed = speed;
+        playerScript.instance.movementSpeed = speed;
 
         // We don't want to check every single act to see if the player has reached the first node
         // So we only check the proceeding one
         // This code bit is a mess
-        int act = player.GetComponent<playerScript>().currentAct;
+        int act = playerScript.instance.currentAct;
         if (act + 1 < tiles.Length) {
-            if (Vector3.Distance(tiles[act + 1].GetComponent<actScript>().firstNode.transform.position, 
-                player.transform.position) < speed ) {
-                playerScript p = player.GetComponent<playerScript>();
-                p.finishAct();
-                player.transform.position = tiles[act + 1].GetComponent<actScript>().firstNode.transform.position;
+            if (Vector3.Distance(tiles[act + 1].GetComponent<actScript>().firstNode.transform.position,
+                playerScript.instance.getPosition()) < speed ) {
+                playerScript.instance.finishAct();
+                playerScript.instance.setPosition(tiles[act + 1].GetComponent<actScript>().firstNode.transform.position);
                 if (act >= 0)
                     tiles[act].GetComponent<actScript>().passAway();
-                p.failedAct = false;
-                p.UI.decreaseTime = true;
-                p.currentAct = act + 1;
-                p.actType = tiles[act + 1].GetComponent<actScript>().actType;
-                p.currentNode = tiles[act + 1].GetComponent<actScript>().firstNode;
-                p.nextNode = tiles[act + 1].GetComponent<actScript>().firstNode.GetComponent<nodeScript>().nextNode;
-                System.Array.Clear(p.gameData, 0, 10);
-                p.minigameOverhead.GetComponent<minigameOverheadScript>().
+                playerScript.instance.failedAct = false;
+                playerScript.instance.UI.decreaseTime = true;
+                playerScript.instance.currentAct = act + 1;
+                playerScript.instance.actType = tiles[act + 1].GetComponent<actScript>().actType;
+                playerScript.instance.currentNode = tiles[act + 1].GetComponent<actScript>().firstNode;
+                playerScript.instance.nextNode = tiles[act + 1].GetComponent<actScript>().
+                    firstNode.GetComponent<nodeScript>().nextNode;
+                System.Array.Clear(playerScript.instance.gameData, 0, 10);
+                minigameOverheadScript.instance.
                     newAct(tiles[act + 1].GetComponent<actScript>().actType, 
                     tiles[act + 1].GetComponent<actScript>().gameData);
-                p.UI.timeLeft = tiles[act + 1].GetComponent<actScript>().timeLimit;
+                playerScript.instance.UI.timeLeft = tiles[act + 1].GetComponent<actScript>().timeLimit;
             }
         }
 	}

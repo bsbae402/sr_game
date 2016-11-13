@@ -4,7 +4,8 @@ using System.Collections;
 
 public class levelListScript : MonoBehaviour {
     // The big script for handling the entire level list
-
+    public static levelListScript instance = null;
+    
     // Records of almost all of its children for calling ease
     // Scroll keeps track of where the scrolling currently is in our level list
     // We keep selected in conjunction with scroll to update the description box
@@ -17,6 +18,12 @@ public class levelListScript : MonoBehaviour {
     // Instead, when a button is pressed we'll update once
     bool needUpdate;
 
+    void Awake() {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
+    }
 	// Use this for initialization
 	void Start () {
         scroll = 0;
