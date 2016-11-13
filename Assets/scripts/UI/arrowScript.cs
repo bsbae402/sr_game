@@ -60,8 +60,10 @@ public class arrowScript : MonoBehaviour {
         }
         hit = true;
         GetComponentInParent<minigameOverheadScript>().miniFeedback(feedback);
-        if (dist < 50)
+        if (dist < 50) {
             Destroy(gameObject);
+            audioManagerScript.instance.playfxSound(9);
+        }
     }
 
     // Input has to be checked in regular time in comparison to the rest of the data

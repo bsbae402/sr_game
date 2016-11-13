@@ -79,6 +79,32 @@ public class minigameOverheadScript : MonoBehaviour {
             puff.SetParent(GetComponent<RectTransform>());
         }
     }
+    IEnumerator finishPuffs() {
+        float rand = 0;
+        for (int i = 0; i < 15; i++) {
+            rand = Random.Range(0, 100);
+            var puff = Instantiate(aesthetics[rand > 50 ? 2 : 3]) as RectTransform;
+            puff.SetParent(GetComponent<RectTransform>());
+        }
+        yield return new WaitForSeconds(1f);
+        for (int i = 0; i < 15; i++) {
+            rand = Random.Range(0, 100);
+            var puff = Instantiate(aesthetics[rand > 50 ? 2 : 3]) as RectTransform;
+            puff.SetParent(GetComponent<RectTransform>());
+        }
+        yield return new WaitForSeconds(1f);
+        for (int i = 0; i < 15; i++) {
+            rand = Random.Range(0, 100);
+            var puff = Instantiate(aesthetics[rand > 50 ? 2 : 3]) as RectTransform;
+            puff.SetParent(GetComponent<RectTransform>());
+        }
+        yield return new WaitForSeconds(1f);
+        for (int i = 0; i < 15; i++) {
+            rand = Random.Range(0, 100);
+            var puff = Instantiate(aesthetics[rand > 50 ? 2 : 3]) as RectTransform;
+            puff.SetParent(GetComponent<RectTransform>());
+        }
+    }
 
     // Called by levelConstruction, we'll switch the displayed minigame
     // gameData's contents are completely ambiguous, depending on the minigame
@@ -119,6 +145,15 @@ public class minigameOverheadScript : MonoBehaviour {
             components[2].GetComponent<CanvasGroup>().alpha = 1;
             // Set obstaclehealth as total health of the obstacle
             obstaclehealth = gameData[0];
+        }
+        // Ending scene
+        // We need a lot of congratulatory effects
+        else if (actType == 99) {
+            StartCoroutine(finishPuffs());
+            components[3].GetComponent<CanvasGroup>().alpha = 1;
+            components[3].GetComponent<CanvasGroup>().blocksRaycasts = true;
+            components[4].GetComponent<CanvasGroup>().alpha = 1;
+            components[4].GetComponent<CanvasGroup>().blocksRaycasts = true;
         }
     }
 

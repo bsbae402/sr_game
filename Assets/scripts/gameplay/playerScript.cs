@@ -81,6 +81,7 @@ public class playerScript : MonoBehaviour {
             getHit(20);
         } else
             UI.requestCompletionImage(actType);
+        audioManagerScript.instance.playfxSound(5);
         UI.updateScore(minigameOverhead.GetComponent<minigameOverheadScript>().
             increaseScore((int)UI.timeLeft * 20));
     }
@@ -97,6 +98,7 @@ public class playerScript : MonoBehaviour {
         if (nextNode.GetComponent<nodeScript>().nodeType == 99) { 
             if (Vector3.Distance(nextNode.transform.position, transform.position) < movementSpeed) {
                 transform.position = nextNode.transform.position;
+                UI.hit(-1000);
                 stop = 99;
             }
         }
@@ -111,6 +113,8 @@ public class playerScript : MonoBehaviour {
                 nextNode = nextNode.GetComponent<nodeScript>().nextNode;
                 angle = currentNode.transform.forward;
                 // If we encounter the beat-em-up node identifier
+                if (currentNode.GetComponent<nodeScript>().nodeType == 2)
+                    audioManagerScript.instance.playfxSound(7);
                 if (currentNode.GetComponent<nodeScript>().nodeType == 4)
                     stop = 1;
             }
@@ -151,6 +155,7 @@ public class playerScript : MonoBehaviour {
                     gameData[0] = 10000 + currentAct;
                     gameData[1] = 0;
                     minigameOverhead.GetComponent<minigameOverheadScript>().miniFeedback(feedback);
+                    audioManagerScript.instance.playfxSound(Random.Range(0,4));
                 }
             }
         }

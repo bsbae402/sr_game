@@ -4,10 +4,19 @@ using UnityEngine.UI;
 
 public class playerStats : MonoBehaviour {
 
+    public static playerStats instance = null;
+
     public int money;
 
     [HideInInspector]
     public bool updateNeeded = false;
+
+    void Awake() {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
+    }
 
 	// Use this for initialization
 	void Start () {
@@ -19,12 +28,15 @@ public class playerStats : MonoBehaviour {
         yield return new WaitForSeconds(6f);
         money += GameObject.FindGameObjectWithTag("perf").GetComponent<performanceScript>().score / 1000;
         GameObject.FindGameObjectWithTag("money").GetComponent<Text>().text = "" + money;
+        audioManagerScript.instance.playfxSound(10);
     }
 
 	// Update is called once per frame
 	void Update () {
 	    if (updateNeeded) { 
             if(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MenuAvenue") {
+                GameObject.FindGameObjectWithTag("money").GetComponent<Text>().text = "" + money;
+                GameObject.FindGameObjectWithTag("moneyEffect").GetComponent<moneyDisplayScript>().start();
                 StartCoroutine(updateStats());
                 updateNeeded = false;
             }

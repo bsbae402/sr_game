@@ -10,9 +10,10 @@ public class overheadPuffScript : MonoBehaviour {
         GetComponent<RectTransform>().localPosition = Vector3.zero;
         GetComponent<RectTransform>().localScale = Vector3.one;
         GetComponent<RectTransform>().localPosition += new Vector3(Random.Range(-400, 400), Random.Range(180, 250));
-        speed = new float[2];
+        speed = new float[3];
         speed[0] = Random.Range(-2, 2);
         speed[1] = Random.Range(-4, 1);
+        speed[2] = Random.Range(-24, 24);
         StartCoroutine(expire());
 	}
 
@@ -23,6 +24,7 @@ public class overheadPuffScript : MonoBehaviour {
 	
 	void FixedUpdate () {
         GetComponent<RectTransform>().localPosition += new Vector3(speed[0], speed[1]);
+        transform.Rotate(new Vector3(0, 0, speed[2]));
         speed[1] -= 0.09f;
 	}
 }

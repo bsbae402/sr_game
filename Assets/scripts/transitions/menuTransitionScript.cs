@@ -15,18 +15,33 @@ public class menuTransitionScript : MonoBehaviour {
     public GameObject[] slides;
     string currentScene;
     bool appeared;
+    bool disappeared;
+
+    public Transform audioManager;
 
     // Use this for initialization
     void Start () {
+        // We still want to be able to test from MenuAvenue or Level, so we have no choice
+        // But to instantiate one if we didn't start from MainMenu
+        if (audioManagerScript.instance == null) { 
+            var AM = Instantiate(audioManager) as Transform;
+            audioManagerScript.instance = AM.GetComponent<audioManagerScript>();
+        }
         appeared = false;
+        disappeared = false;
         DontDestroyOnLoad(transform.parent.gameObject);
         currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
     }
 
     void Update() {
-        if (appeared)
-            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != currentScene)
+        if (disappeared)
+            return;
+        if (appeared) {
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != currentScene) {
+                disappeared = true;
                 StartCoroutine(disappear());
+            }
+        }
     }
 
     public void loadAppear(string scene) {
@@ -38,11 +53,12 @@ public class menuTransitionScript : MonoBehaviour {
 
     IEnumerator appear(string scene) {
         for (int i = 0; i < slides.Length; i++) {
-            if (i < 7)
+            if (i < 7) {
                 yield return new WaitForSeconds(0.2f);
+                audioManagerScript.instance.playfxSound(4);
+            }
             slides[i].GetComponent<CanvasGroup>().alpha = 1;
             slides[i].transform.SetAsLastSibling();
-            //GetComponent<AudioSource>().Play();
         }
         yield return new WaitForSeconds(3f);
         AsyncOperation async = SceneManager.LoadSceneAsync(scene);
@@ -54,11 +70,12 @@ public class menuTransitionScript : MonoBehaviour {
     IEnumerator disappear() {
         yield return new WaitForSeconds(1.0f);
         for (int i = slides.Length - 1; i >= 0; i--) {
-            if (i < 7)
+            if (i < 7) {
                 yield return new WaitForSeconds(0.2f);
+                audioManagerScript.instance.playfxSound(4);
+            }
             if( slides[i] != null )
                 slides[i].GetComponent<CanvasGroup>().alpha = 0;
-            //GetComponent<AudioSource>().Play();
         }
         yield return new WaitForSeconds(1f);
         for (int i = 0; i < slides.Length; i++) {

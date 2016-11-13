@@ -36,6 +36,7 @@ public class levelConstructionScript : MonoBehaviour {
 
 	// Use for initialization
 	void Start () {
+        audioManagerScript.instance.stopMusic();
         Time.timeScale = 1;
         // Grabs level data to generate level
         levelData = GameObject.FindGameObjectWithTag("levelInit");
@@ -108,13 +109,13 @@ public class levelConstructionScript : MonoBehaviour {
 
     IEnumerator finishStage() {
         yield return new WaitForSeconds(3f);
-        if(GameObject.FindGameObjectWithTag("stats") != null)
-            GameObject.FindGameObjectWithTag("stats").GetComponent<playerStats>().updateNeeded = true;
+        if(playerStats.instance != null)
+            playerStats.instance.updateNeeded = true;
         GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
             loadAppear("MenuAvenue");
     }
     IEnumerator failStage() { 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
         Destroy(GameObject.FindGameObjectWithTag("perf"));
         GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
             loadAppear("MenuAvenue");

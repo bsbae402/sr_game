@@ -8,12 +8,17 @@ public class mainMenuButtonScript : MonoBehaviour {
     // Not sure if needed anymore
     bool loading = false;
 
+    void Start() {
+        audioManagerScript.instance.playMusic(0);
+    }
+
     // Progress the game to the MenuAvenue
     public void StartGame() {
         if (!loading) {
             GameObject.FindGameObjectWithTag("loader").
                 GetComponent<menuTransitionScript>().loadAppear("MenuAvenue");
             loading = true;
+            audioManagerScript.instance.playfxSound(8);
         }
     }
 

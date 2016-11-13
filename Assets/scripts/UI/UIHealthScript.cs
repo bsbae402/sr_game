@@ -31,7 +31,9 @@ public class UIHealthScript : MonoBehaviour {
         rotateCounter++;
 
         // When Velvet loses health her appearance will change
-        if( health >= 75 )
+        if( health >= 1000 )
+            GetComponent<Image>().sprite = Resources.Load<Sprite>("VelvetUIHeadYay");
+        else if( health >= 75 )
             GetComponent<Image>().sprite = Resources.Load<Sprite>("VelvetUIHeadOkay");
         else if( health >= 50)
             GetComponent<Image>().sprite = Resources.Load<Sprite>("VelvetUIHeadMeh");

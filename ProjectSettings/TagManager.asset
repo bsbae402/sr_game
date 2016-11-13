@@ -12,6 +12,7 @@ TagManager:
   - stats
   - perf
   - money
+  - moneyEffect
   layers:
   - Default
   - TransparentFX
