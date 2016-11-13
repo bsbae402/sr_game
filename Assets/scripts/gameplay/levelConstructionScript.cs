@@ -4,9 +4,6 @@ using System.Collections;
 public class levelConstructionScript : MonoBehaviour {
 
     public static levelConstructionScript instance = null;
-
-    // A lot of variables are recorded as fields because the Level scene is used as every stage
-    public GameObject player;
     
     // Numberings for generating the stage; this allows us to use just one scene
     public Transform[] tileBase;
