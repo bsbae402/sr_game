@@ -26,6 +26,8 @@ public class playerStats : MonoBehaviour {
 	
     IEnumerator updateStats() {
         yield return new WaitForSeconds(6f);
+        if (GameObject.FindGameObjectWithTag("perf") == null)
+            yield break;
         money += GameObject.FindGameObjectWithTag("perf").GetComponent<performanceScript>().score / 1000;
         GameObject.FindGameObjectWithTag("money").GetComponent<Text>().text = "" + money;
         audioManagerScript.instance.playfxSound(10);

@@ -15,6 +15,8 @@ public class moneyDisplayScript : MonoBehaviour {
     }
 
     IEnumerator display() {
+        if (GameObject.FindGameObjectWithTag("perf") == null)
+            yield break;
         int s = GameObject.FindGameObjectWithTag("perf").GetComponent<performanceScript>().score;
         yield return new WaitForSeconds(2f);
         score.GetComponent<Text>().text = "" + s;

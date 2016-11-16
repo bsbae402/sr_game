@@ -125,6 +125,8 @@ public class levelConstructionScript : MonoBehaviour {
     IEnumerator failStage() { 
         Time.timeScale = 1;
         yield return new WaitForSeconds(1f);
+        if (playerStats.instance != null)
+            playerStats.instance.updateNeeded = true;
         Destroy(GameObject.FindGameObjectWithTag("perf"));
         GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
             loadAppear("MenuAvenue");

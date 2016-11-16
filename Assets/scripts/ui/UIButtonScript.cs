@@ -7,6 +7,8 @@ public class UIButtonScript : MonoBehaviour {
         switch (status) {
             case 0:
                 Time.timeScale = 1;
+                if (playerStats.instance != null)
+                    playerStats.instance.updateNeeded = true;
                 Destroy(GameObject.FindGameObjectWithTag("perf"));
                 GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
                     loadAppear("MenuAvenue");

@@ -139,28 +139,30 @@ public class playerScript : MonoBehaviour {
         } else { 
             UI.decreaseTime = false;
         }
+
+        // Makes sure the player is facing the right way during movement
+        if (currentNode != null)
+            transform.rotation = Quaternion.Slerp(
+                eyes.transform.rotation,
+                currentNode.transform.rotation,
+                Time.deltaTime * 10);
+
         // If an act runs out of time, they are supposed to unconditionally fail
         // Some minigames, however, require more player interaction than others and
         // therefore, the game needs to detect this
         // We have problems with it running more than once, however..
         if (UI.timeLeft == 0) {
-            if (failedAct)
-                return;
-            failedAct = true;
-            if (actType == 1) {
-                int[] feedback = { -200, 0 };
-                // Code 10000 : Shake current act's interactable obstacle
-                gameData[0] = 10000 + currentAct;
-                gameData[1] = 2;
-                minigameOverheadScript.instance.miniFeedback(feedback);
+            if (!failedAct) {
+                failedAct = true;
+                if (actType == 1) {
+                    int[] feedback = { -200, 0 };
+                    // Code 10000 : Shake current act's interactable obstacle
+                    gameData[0] = 10000 + currentAct;
+                    gameData[1] = 2;
+                    minigameOverheadScript.instance.miniFeedback(feedback);
+                }
             }
         }
-        // Makes sure the player is facing the right way during movement
-        if(currentNode != null)
-            transform.rotation = Quaternion.Slerp(
-                eyes.transform.rotation,
-                currentNode.transform.rotation,
-                Time.deltaTime * 10);
     }
 
     // We need to do key input in Update() because it updates every frame
