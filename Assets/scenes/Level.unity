@@ -330,7 +330,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0afbad3c371e977409976490f7d783e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 2028079538}
   tileBase:
   - {fileID: 4000010322346402, guid: dadecfd6f9181ea41b884a2111689fda, type: 2}
   - {fileID: 4000012394697038, guid: 23b18893993b99d47ba0bbb2fc5ca3d5, type: 2}
@@ -1587,7 +1586,7 @@ Canvas:
   serializedVersion: 2
   m_RenderMode: 1
   m_Camera: {fileID: 2141390011}
-  m_PlaneDistance: 1
+  m_PlaneDistance: 0.301
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -1610,7 +1609,6 @@ MonoBehaviour:
   TimeText: {fileID: 792616439}
   ScoreText: {fileID: 1252780232}
   Overhead: {fileID: 582009963}
-  Completion: {fileID: 1420687527}
   timeLeft: 0
   decreaseTime: 0
 --- !u!1 &1584203343
@@ -2264,7 +2262,6 @@ MonoBehaviour:
   nextNode: {fileID: 868212054}
   currentNode: {fileID: 0}
   UI: {fileID: 0}
-  minigameOverhead: {fileID: 582009963}
   gameData: 
   currentAct: -1
   actType: 0

@@ -39,8 +39,10 @@ public class audioManagerScript : MonoBehaviour {
         music.GetComponent<audioSourceScript>().startPlayingMusic(audiomusic[index]);
     }
 
-    public void stopMusic() { 
-        Destroy(music.gameObject);
+    public void stopMusic() {
+        if (music != null)
+            if (music.gameObject != null)
+                Destroy(music.gameObject);
     }
 
 	// Update is called once per frame

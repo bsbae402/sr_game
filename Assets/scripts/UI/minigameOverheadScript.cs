@@ -14,6 +14,9 @@ public class minigameOverheadScript : MonoBehaviour {
     // There's no other way to do this unfortunately
     // Holds the base prefabs for arrows
     public RectTransform[] arrows;
+    // In order to prevent key presses to count for several notes, we have to keep track of
+    // the arrows we make.
+    arrowScript[] activeArrows;
     // Hard coded piece for the beat-em-up minigame
     int obstaclehealth;
 
@@ -53,7 +56,7 @@ public class minigameOverheadScript : MonoBehaviour {
     public void miniFeedback(int[] feedbackData) {
         // Arrows provide feedback for the alleyway navigation minigame
         if (currentAct == 0) {
-            if (feedbackData[0] == 5) {
+            if (feedbackData[0] >= 4) {
                 playerScript.instance.getHit(feedbackData[1]);
                 return;
             }
@@ -130,6 +133,7 @@ public class minigameOverheadScript : MonoBehaviour {
             int dist = 0;
             int type = 0;
             float x = 0;
+            activeArrows = new arrowScript[gameData.Length];
             for (int i = 0; i < gameData.Length; i++) {
                 dist = gameData[i] % 100;
                 type = gameData[i] / 100;
@@ -140,6 +144,7 @@ public class minigameOverheadScript : MonoBehaviour {
                 else if (type == 2)
                     x = -335f;
                 var arrow = Instantiate(arrows[type]) as RectTransform;
+                activeArrows[i] = arrow.GetComponent<arrowScript>();
                 arrow.SetParent(GetComponent<RectTransform>());
                 arrow.localScale = new Vector3(1, 1, 1);
                 arrow.localPosition = Vector3.zero;
@@ -173,9 +178,39 @@ public class minigameOverheadScript : MonoBehaviour {
     public int getScore() {
         return score.GetComponent<performanceScript>().score;
     }
-
-    void FixedUpdate() {
-
+    
+    void Update() {
+        // Unfortunately the calculation if an arrow is hit must happen here.
+        // This is because a single arrow press may count as hitting multiple arrows if the handling is left to arrows.
+        // This means we have to do the detection ourselves.
+        // Needs a lot of overhead I feel; I hope the player doesn't spam the keys.
+        if (currentAct == 0) {
+            if (Input.GetKeyDown(KeyCode.UpArrow)) {
+                for (int i = 0; i < activeArrows.Length; i++) { 
+                    if(activeArrows[i].arrowType == 0 && 
+                        !activeArrows[i].hit) {
+                        activeArrows[i].hitArrow();
+                        return;
+                    }
+                }
+            } else if (Input.GetKeyDown(KeyCode.RightArrow)) {
+                for (int i = 0; i < activeArrows.Length; i++) { 
+                    if(activeArrows[i].arrowType == 1 && 
+                        !activeArrows[i].hit) {
+                        activeArrows[i].hitArrow();
+                        return;
+                    }
+                }
+            } else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+                for (int i = 0; i < activeArrows.Length; i++) { 
+                    if(activeArrows[i].arrowType == 2 && 
+                        !activeArrows[i].hit) {
+                        activeArrows[i].hitArrow();
+                        return;
+                    }
+                }
+            }
+        }
     }
 
 }

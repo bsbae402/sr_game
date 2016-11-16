@@ -29,6 +29,8 @@ public class playerStats : MonoBehaviour {
         money += GameObject.FindGameObjectWithTag("perf").GetComponent<performanceScript>().score / 1000;
         GameObject.FindGameObjectWithTag("money").GetComponent<Text>().text = "" + money;
         audioManagerScript.instance.playfxSound(10);
+        yield return new WaitForSeconds(1f);
+        Destroy(GameObject.FindGameObjectWithTag("perf"));
     }
 
 	// Update is called once per frame

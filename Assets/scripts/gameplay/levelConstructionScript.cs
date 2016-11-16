@@ -97,8 +97,10 @@ public class levelConstructionScript : MonoBehaviour {
                 found = true;
         if (!found)
             t = -1;
-        if (t == -1)
-            t = Random.Range(0, 9);
+        if (t == -1) {
+            t = validTiles[Random.Range(1, validTiles.Length)];
+            variant = t % 10;
+        }
         if (variant == 0)
             t += (int)(Random.Range(1, 9));
 
@@ -113,6 +115,7 @@ public class levelConstructionScript : MonoBehaviour {
     }
 
     IEnumerator finishStage() {
+        Time.timeScale = 1;
         yield return new WaitForSeconds(3f);
         if(playerStats.instance != null)
             playerStats.instance.updateNeeded = true;
@@ -120,6 +123,7 @@ public class levelConstructionScript : MonoBehaviour {
             loadAppear("MenuAvenue");
     }
     IEnumerator failStage() { 
+        Time.timeScale = 1;
         yield return new WaitForSeconds(1f);
         Destroy(GameObject.FindGameObjectWithTag("perf"));
         GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().

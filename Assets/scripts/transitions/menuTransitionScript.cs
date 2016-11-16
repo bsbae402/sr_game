@@ -55,6 +55,7 @@ public class menuTransitionScript : MonoBehaviour {
         for (int i = 0; i < slides.Length; i++) {
             if (i < 7) {
                 yield return new WaitForSeconds(0.2f);
+                slides[i].GetComponent<CanvasGroup>().blocksRaycasts = true;
                 audioManagerScript.instance.playfxSound(4);
             }
             slides[i].GetComponent<CanvasGroup>().alpha = 1;
@@ -72,6 +73,7 @@ public class menuTransitionScript : MonoBehaviour {
         for (int i = slides.Length - 1; i >= 0; i--) {
             if (i < 7) {
                 yield return new WaitForSeconds(0.2f);
+                slides[i].GetComponent<CanvasGroup>().blocksRaycasts = false;
                 audioManagerScript.instance.playfxSound(4);
             }
             if( slides[i] != null )

@@ -69,14 +69,16 @@ public class playerScript : MonoBehaviour {
     public void setPosition(Vector3 pos) {
         transform.position = pos;
     }
-
-    public void getHit(int damage, float invincibleTime) { 
+    public void getHit(int damage, float invincibleTime, bool strong) {
         if (invincible)
             return;
-        hit = true;
+        hit = strong;
         invincible = true;
         StartCoroutine(invincibility(invincibleTime));
         UI.hit(damage);
+    }
+    public void getHit(int damage, float invincibleTime) {
+        getHit(damage, invincibleTime, true);
     }
     public void getHit(int damage) {
         getHit(damage, 0f);
@@ -93,10 +95,12 @@ public class playerScript : MonoBehaviour {
             return;
         if (UI.timeLeft == 0) {
             UI.requestCompletionImage(-1);
-            getHit(20);
-        } else
+            UI.hit(20);
+            audioManagerScript.instance.playfxSound(11);
+        } else {
             UI.requestCompletionImage(actType);
-        audioManagerScript.instance.playfxSound(5);
+            audioManagerScript.instance.playfxSound(5);
+        }
         UI.updateScore(minigameOverheadScript.instance.increaseScore((int)UI.timeLeft * 20));
     }
 

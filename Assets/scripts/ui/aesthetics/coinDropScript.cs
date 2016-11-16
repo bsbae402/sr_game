@@ -9,9 +9,10 @@ public class coinDropScript : MonoBehaviour {
 	void Start () {
         GetComponent<RectTransform>().localPosition = Vector3.zero;
         GetComponent<RectTransform>().localScale = Vector3.one;
-        speed = new float[2];
+        speed = new float[3];
         speed[0] = Random.Range(-2, 2);
         speed[1] = Random.Range(-4, 1);
+        speed[2] = Random.Range(-24, 24);
         StartCoroutine(expire());
 	}
 
@@ -21,6 +22,7 @@ public class coinDropScript : MonoBehaviour {
     }
 	
 	void FixedUpdate () {
+        GetComponent<RectTransform>().Rotate(0, 0, speed[2]);
         GetComponent<RectTransform>().localPosition += new Vector3(speed[0], speed[1]);
         speed[1] -= 0.09f;
 	}
