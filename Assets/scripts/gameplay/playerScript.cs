@@ -9,6 +9,7 @@ public class playerScript : MonoBehaviour {
     // Used for camera rotation
     public GameObject nextNode;
     public GameObject currentNode;
+    int nodes;
 
     public UIScript UI;
     // The super-messy minigameOverhead is a child to the player
@@ -41,10 +42,16 @@ public class playerScript : MonoBehaviour {
     public float movementSpeed;
     [HideInInspector]
     // Detects whether the movement should stop or not
-    // It's used in minigames such as Beat-em-up
+    // It's used in minigames such as Beat-Up
     public int stop = 0;
+    [HideInInspector]
     // Used to process a failed stage inside update, so that update won't call it a million times
     public bool failedAct = false;
+    [HideInInspector]
+    // Used in Hurdle Jump to detect whether the player is jumping
+    public bool jumping = false;
+    float jumpheight = 0.2f;
+    bool warned = false;
 
     void Awake() {
         if (instance == null)
@@ -57,6 +64,7 @@ public class playerScript : MonoBehaviour {
     void Start () {
         UI = GetComponentInChildren<UIScript>();
         eyes = GetComponentInChildren<Camera>();
+        nodes = 1;
         currentAct = -1;
         actType = -1;
         angle = GetComponentInChildren<Camera>().transform.forward;
@@ -69,6 +77,7 @@ public class playerScript : MonoBehaviour {
     public void setPosition(Vector3 pos) {
         transform.position = pos;
     }
+
     public void getHit(int damage, float invincibleTime, bool strong) {
         if (invincible)
             return;
@@ -88,6 +97,13 @@ public class playerScript : MonoBehaviour {
         invincible = false;
     }
 
+    IEnumerator jump() {
+        yield return new WaitForSeconds(0.5f);
+        jumpheight = 0.2f;
+        eyes.transform.localPosition = new Vector3(0, 2.5f, 0);
+        jumping = false;
+    }
+
     // Called by level construction when we finish a minigame
     // It's the only way to get it to call ONCE and only ONCE
     public void finishAct() {
@@ -102,6 +118,7 @@ public class playerScript : MonoBehaviour {
             audioManagerScript.instance.playfxSound(5);
         }
         UI.updateScore(minigameOverheadScript.instance.increaseScore((int)UI.timeLeft * 20));
+        nodes = 1;
     }
 
     // FixedUpdate moves with the game speed
@@ -125,7 +142,8 @@ public class playerScript : MonoBehaviour {
         // Updates desired angle, and the current and next nodes for the player
         else if (nextNode.GetComponent<nodeScript>().nodeType != 1) {
 	        if (Vector3.Distance(nextNode.transform.position, transform.position) < movementSpeed) {
-                //Debug.Log("From player: " + nextNode.name);
+                nodes++;
+                warned = false;
                 transform.position = nextNode.transform.position;
                 currentNode = nextNode;
                 nextNode = nextNode.GetComponent<nodeScript>().nextNode;
@@ -135,6 +153,27 @@ public class playerScript : MonoBehaviour {
                     audioManagerScript.instance.playfxSound(7);
                 if (currentNode.GetComponent<nodeScript>().nodeType == 4)
                     stop = 1;
+                if (currentNode.GetComponent<nodeScript>().nodeType == 5) {
+                    if (eyes.transform.localPosition.y < 3.2f) {
+                        getHit(10);
+                        // Code 10000, 0 : Wreck current act's interactable obstacle
+                        gameData[0] = 10000 + nodes - 2;
+                        gameData[1] = 0;
+                        int[] feedback = { 2 };
+                        minigameOverheadScript.instance.miniFeedback(feedback);
+                    } else {
+                        int[] feedback = { 1 };
+                        minigameOverheadScript.instance.miniFeedback(feedback);
+                    }
+                }
+            } else if (nextNode.GetComponent<nodeScript>().nodeType == 5) {
+                if (!warned) {
+                    if (Vector3.Distance(nextNode.transform.position, transform.position) < 10.0f) {
+                        int[] feedback = { 0 };
+                        minigameOverheadScript.instance.miniFeedback(feedback);
+                        warned = true;
+                    }
+                }
             }
         } else { 
             UI.decreaseTime = false;
@@ -147,6 +186,12 @@ public class playerScript : MonoBehaviour {
                 currentNode.transform.rotation,
                 Time.deltaTime * 10);
 
+        // Moves the camera parabolically when jumping
+        if (jumping) {
+            eyes.transform.position += new Vector3(0, jumpheight, 0);
+            jumpheight -= 0.016f;
+        }
+
         // If an act runs out of time, they are supposed to unconditionally fail
         // Some minigames, however, require more player interaction than others and
         // therefore, the game needs to detect this
@@ -157,7 +202,7 @@ public class playerScript : MonoBehaviour {
                 if (actType == 1) {
                     int[] feedback = { -200, 0 };
                     // Code 10000 : Shake current act's interactable obstacle
-                    gameData[0] = 10000 + currentAct;
+                    gameData[0] = 10000;
                     gameData[1] = 2;
                     minigameOverheadScript.instance.miniFeedback(feedback);
                 }
@@ -171,13 +216,22 @@ public class playerScript : MonoBehaviour {
             if (currentNode.GetComponent<nodeScript>().nodeType == 4) { 
                 if (Input.anyKeyDown) {
                     int[] feedback = { 10 };
-                    // Code 10000 : Shake current act's interactable obstacle
-                    gameData[0] = 10000 + currentAct;
+                    // Code 10000, 0 : Shake current act's interactable obstacle
+                    gameData[0] = 10000;
                     gameData[1] = 0;
                     minigameOverheadScript.instance.miniFeedback(feedback);
                     audioManagerScript.instance.playfxSound(Random.Range(0,4));
                 }
             }
         }
+        else if (actType == 2) { 
+            if (!jumping) {
+                if (Input.GetKeyDown("space")) {
+                    jumping = true;
+                    StartCoroutine(jump());
+                }
+            }
+        }
     }
+
 }

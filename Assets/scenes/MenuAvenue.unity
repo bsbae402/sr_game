@@ -2990,11 +2990,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f992bda26a6c01449c467f9e0f7476b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelName: Velvet's Gauntlet Version 1!
+  levelName: Test
   sceneName: Level
-  description: Time for a Velvet-grade workout!
-  obstacles: ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-  stageSpeed: 1.6
+  description: Test
+  obstacles: 14000000140000001400000014000000
+  stageSpeed: 1
 --- !u!4 &1756951705
 Transform:
   m_ObjectHideFlags: 0

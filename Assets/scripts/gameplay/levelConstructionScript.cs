@@ -9,8 +9,8 @@ public class levelConstructionScript : MonoBehaviour {
     public Transform[] tileBase;
     // Possible values passed on by the level init obstacles, as well as the corresponding act tiles
     // Add more as we make more minigames
-    int[] validTiles =  {       -1,  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
-    int[] CorrespondingTile = { -1, -1, 0, 1, 2, 3, 0, 1, 2, 3, 0,  -1,  4,  4,  4,  4,  4,  4,  4,  4,  4 };
+    int[] validTiles =  {       -1,  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19,  20, 21, 22, 23, 24, 25, 26, 27, 28, 29 };
+    int[] CorrespondingTile = { -1, -1, 0, 1, 2, 3, 0, 1, 2, 3, 0,  -1,  4,  4,  4,  4,  4,  4,  4,  4,  4,  -1,  5,  6,  7,  5,  6,  7,  5,  6,  7 };
 
     // Where the tiles themselves are held
     [HideInInspector]
@@ -161,15 +161,15 @@ public class levelConstructionScript : MonoBehaviour {
         
         // GameData is completely arbitrary in the way that it'll pass data to levelConstruction
         // I doubt I'll even remember what it does.
-        // Code {1xxxx} - The player wishes to interact with the data%10000th element of the act's interactable obstacles
+        // Code {1xxxx, 0} - The player wishes to interact with the data%10000th element of the act's interactable obstacles
         // Code {1xxxx, 1} - The player wishes to remove the data%10000th element of the act's interactable obstacles
         // Code {1xxxx, 2} - Same as previous, but the player failed the stage
         if (playerScript.instance.gameData[0] / 10000 == 1) {
-            tiles[playerScript.instance.gameData[0] % 10000].GetComponent<actScript>().
-                interactWithObstacle(0);
+            tiles[playerScript.instance.currentAct].GetComponent<actScript>().
+                interactWithObstacle(playerScript.instance.gameData[0] % 10000);
             if (playerScript.instance.gameData[1] >= 1) {
-                tiles[playerScript.instance.gameData[0] % 10000].GetComponent<actScript>().
-                    removeObstacle(0);
+                tiles[playerScript.instance.currentAct].GetComponent<actScript>().
+                    removeObstacle(playerScript.instance.gameData[0] % 10000);
                 System.Array.Clear(playerScript.instance.gameData, 0, 10);
             }
         }

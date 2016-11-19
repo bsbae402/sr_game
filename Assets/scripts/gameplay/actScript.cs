@@ -8,9 +8,13 @@ public class actScript : MonoBehaviour {
     // gameData that's completely situational depending on what the 
     // minigame is
     /*******ACT TYPES*******
-    0 = Alleyway Navigation
-    1 = Beat-Em-Up Obstacle
-    99 = Stage Complete
+    0 = Alley-Navigation
+    1 = Obstacle Beat-Up
+    2 = Hurdle Jump
+    3 = Silent Crossing
+    4 = Norman Doors
+    5 = Look Out
+    1000 = Stage Complete
     ***********************/
     public int actType;
     public int actLength;
@@ -19,7 +23,7 @@ public class actScript : MonoBehaviour {
     public int[] gameData;
     public GameObject[] interactiveObstacles;
 
-    // Saves some rendering time by destroying acts that we've completed
+    // Saves some computation time by destroying acts that we've completed
     public void passAway() {
         StartCoroutine(die());
     }
@@ -29,10 +33,14 @@ public class actScript : MonoBehaviour {
     }
 
     public void interactWithObstacle(int obstacle) {
+        if (obstacle >= interactiveObstacles.Length)
+            return;
         if (interactiveObstacles[obstacle] != null)
             interactiveObstacles[obstacle].GetComponent<obstacleScript>().interact();
     }
     public void removeObstacle(int obstacle) {
+        if (obstacle >= interactiveObstacles.Length)
+            return;
         if (interactiveObstacles[obstacle] != null)
             interactiveObstacles[obstacle].GetComponent<obstacleScript>().remove();
     }

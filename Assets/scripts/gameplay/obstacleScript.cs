@@ -19,8 +19,13 @@ public class obstacleScript : MonoBehaviour {
 	}
 
     public void interact() {
-        if(actType == 1)
+        if (actType == 1)
             shake += 0.4f;
+        else if (actType == 2) {
+            GetComponent<Animator>().SetBool("Destroyed", true);
+            removing = true;
+            StartCoroutine(die());
+        }
     }
     public void remove() {
         removing = true;

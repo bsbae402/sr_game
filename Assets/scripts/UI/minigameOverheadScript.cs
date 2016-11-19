@@ -78,6 +78,16 @@ public class minigameOverheadScript : MonoBehaviour {
                 playerScript.instance.UI.decreaseTime = false;
             }
         }
+        else if (currentAct == 2) {
+            if (feedbackData[0] == 0) {
+                components[5].GetComponent<CanvasGroup>().alpha = 1;
+            } else if (feedbackData[0] == 1) {
+                score.GetComponent<performanceScript>().score += 100;
+                components[5].GetComponent<CanvasGroup>().alpha = 0;
+            } else if (feedbackData[0] == 2) { 
+                components[5].GetComponent<CanvasGroup>().alpha = 0;
+            }
+        }
     }
 
     void hitMark() {
@@ -160,9 +170,13 @@ public class minigameOverheadScript : MonoBehaviour {
             // Set obstaclehealth as total health of the obstacle
             obstaclehealth = gameData[0];
         }
+        // Hurdle Jump
+        else if (actType == 2) { 
+
+        }
         // Ending scene
         // We need a lot of congratulatory effects
-        else if (actType == 99) {
+        else if (actType == 1000) {
             StartCoroutine(finishPuffs());
             components[3].GetComponent<CanvasGroup>().alpha = 1;
             components[3].GetComponent<CanvasGroup>().blocksRaycasts = true;
