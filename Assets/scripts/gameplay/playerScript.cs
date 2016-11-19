@@ -104,12 +104,17 @@ public class playerScript : MonoBehaviour {
         jumping = false;
     }
 
+    public IEnumerator stopPlayer(float time) {
+        yield return new WaitForSeconds(time);
+        stop = 0;
+    }
+
     // Called by level construction when we finish a minigame
     // It's the only way to get it to call ONCE and only ONCE
     public void finishAct() {
         if (actType < 0)
             return;
-        if (UI.timeLeft == 0) {
+        if (UI.timeLeft == 0 || failedAct) {
             UI.requestCompletionImage(-1);
             UI.hit(20);
             audioManagerScript.instance.playfxSound(11);
@@ -165,6 +170,17 @@ public class playerScript : MonoBehaviour {
                         int[] feedback = { 1 };
                         minigameOverheadScript.instance.miniFeedback(feedback);
                     }
+                }
+                if (currentNode.GetComponent<nodeScript>().nodeType == 6)
+                    stop = -1;
+                if (currentNode.GetComponent<nodeScript>().nodeType == 7) {
+                    if (failedAct) {
+                        getHit(30);
+                    } else { 
+                        int[] feedback = { 0 };
+                        minigameOverheadScript.instance.miniFeedback(feedback);
+                    }
+                    StopCoroutine("stopPlayer");
                 }
             } else if (nextNode.GetComponent<nodeScript>().nodeType == 5) {
                 if (!warned) {
@@ -229,6 +245,14 @@ public class playerScript : MonoBehaviour {
                 if (Input.GetKeyDown("space")) {
                     jumping = true;
                     StartCoroutine(jump());
+                }
+            }
+        }
+        if (actType == 3) { 
+            if (currentNode.GetComponent<nodeScript>().nodeType == 6) { 
+                if (Input.anyKeyDown) {
+                    stop = 0;
+                    failedAct = true;
                 }
             }
         }

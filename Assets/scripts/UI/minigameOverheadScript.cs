@@ -88,6 +88,9 @@ public class minigameOverheadScript : MonoBehaviour {
                 components[5].GetComponent<CanvasGroup>().alpha = 0;
             }
         }
+        else if (currentAct == 3) {
+            score.GetComponent<performanceScript>().score += 800;
+        }
     }
 
     void hitMark() {
@@ -173,6 +176,10 @@ public class minigameOverheadScript : MonoBehaviour {
         // Hurdle Jump
         else if (actType == 2) { 
 
+        }
+        // Silent Crossing
+        else if (actType == 3) {
+            StartCoroutine(playerScript.instance.stopPlayer(gameData[0]));
         }
         // Ending scene
         // We need a lot of congratulatory effects

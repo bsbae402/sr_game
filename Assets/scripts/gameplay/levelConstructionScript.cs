@@ -9,8 +9,8 @@ public class levelConstructionScript : MonoBehaviour {
     public Transform[] tileBase;
     // Possible values passed on by the level init obstacles, as well as the corresponding act tiles
     // Add more as we make more minigames
-    int[] validTiles =  {       -1,  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19,  20, 21, 22, 23, 24, 25, 26, 27, 28, 29 };
-    int[] CorrespondingTile = { -1, -1, 0, 1, 2, 3, 0, 1, 2, 3, 0,  -1,  4,  4,  4,  4,  4,  4,  4,  4,  4,  -1,  5,  6,  7,  5,  6,  7,  5,  6,  7 };
+    int[] validTiles =  {       -1,  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19,  20, 21, 22, 23, 24, 25, 26, 27, 28, 29,  30, 31, 32, 33, 34, 35, 36, 37, 38, 39 };
+    int[] CorrespondingTile = { -1, -1, 0, 1, 2, 3, 0, 1, 2, 3, 0,  -1,  4,  4,  4,  4,  4,  4,  4,  4,  4,  -1,  5,  6,  7,  5,  6,  7,  5,  6,  7,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8  };
 
     // Where the tiles themselves are held
     [HideInInspector]
@@ -41,7 +41,8 @@ public class levelConstructionScript : MonoBehaviour {
 
 	// Use for initialization
 	void Start () {
-        audioManagerScript.instance.stopMusic();
+        if (audioManagerScript.instance != null)
+            audioManagerScript.instance.stopMusic();
         Time.timeScale = 1;
         // Grabs level data to generate level
         levelData = GameObject.FindGameObjectWithTag("levelInit");
