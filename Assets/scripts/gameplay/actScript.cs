@@ -12,8 +12,9 @@ public class actScript : MonoBehaviour {
     1 = Obstacle Beat-Up
     2 = Hurdle Jump
     3 = Silent Crossing
-    4 = Norman Doors
-    5 = Look Out
+    4 = Look Out
+    5 = Drawbridge
+    6 = Norman Doors
     1000 = Stage Complete
     ***********************/
     public int actType;

@@ -11,9 +11,8 @@ public class playerScript : MonoBehaviour {
     public GameObject currentNode;
     int nodes;
 
+    [HideInInspector]
     public UIScript UI;
-    // The super-messy minigameOverhead is a child to the player
-    // Again, a lot of consistent objects are used as public fields because it won't matter anyway
 
     // Used to send information between the player and the level
     [HideInInspector]
@@ -27,9 +26,6 @@ public class playerScript : MonoBehaviour {
     // The desired angle the player wants to end up facing depending on the current node
     [HideInInspector]
     public Vector3 angle;
-    
-    // Our camera kept record of for calling ease
-    Camera eyes;
 
     [HideInInspector]
     // levelConstruction's record of the movement speed will slow down
@@ -52,6 +48,9 @@ public class playerScript : MonoBehaviour {
     public bool jumping = false;
     float jumpheight = 0.2f;
     bool warned = false;
+    [HideInInspector]
+    // Used in Look Out to detect if player hits a person
+    public int lane = 0;
 
     void Awake() {
         if (instance == null)
@@ -63,12 +62,11 @@ public class playerScript : MonoBehaviour {
     // Use this for initialization
     void Start () {
         UI = GetComponentInChildren<UIScript>();
-        eyes = GetComponentInChildren<Camera>();
         nodes = 1;
         currentAct = -1;
         actType = -1;
         angle = GetComponentInChildren<Camera>().transform.forward;
-        gameData = new int[10];
+        gameData = new int[20];
 	}
 
     public Vector3 getPosition() {
@@ -97,16 +95,26 @@ public class playerScript : MonoBehaviour {
         invincible = false;
     }
 
+    // Used to stop the jumping mechanic after a small amount of time
     IEnumerator jump() {
         yield return new WaitForSeconds(0.5f);
         jumpheight = 0.2f;
-        eyes.transform.localPosition = new Vector3(0, 2.5f, 0);
+        cameraScript.instance.transform.localPosition = new Vector3(0, 2.5f, 0);
         jumping = false;
     }
 
+    // Stop the player for a certain amount of time
     public IEnumerator stopPlayer(float time) {
         yield return new WaitForSeconds(time);
         stop = 0;
+    }
+
+    // Uses an unused portion of the gameData to record information for the player
+    // It is a prerequisite that data[] be of size 16 or less
+    public void useGameData(int[] data) { 
+        for(int i = 0; i < data.Length; i++) {
+            gameData[4 + i] = data[i];
+        }
     }
 
     // Called by level construction when we finish a minigame
@@ -153,35 +161,55 @@ public class playerScript : MonoBehaviour {
                 currentNode = nextNode;
                 nextNode = nextNode.GetComponent<nodeScript>().nextNode;
                 angle = currentNode.transform.forward;
-                // If we encounter the beat-em-up node identifier
-                if (currentNode.GetComponent<nodeScript>().nodeType == 2)
-                    audioManagerScript.instance.playfxSound(7);
-                if (currentNode.GetComponent<nodeScript>().nodeType == 4)
-                    stop = 1;
-                if (currentNode.GetComponent<nodeScript>().nodeType == 5) {
-                    if (eyes.transform.localPosition.y < 3.2f) {
-                        getHit(10);
-                        // Code 10000, 0 : Wreck current act's interactable obstacle
-                        gameData[0] = 10000 + nodes - 2;
-                        gameData[1] = 0;
-                        int[] feedback = { 2 };
-                        minigameOverheadScript.instance.miniFeedback(feedback);
-                    } else {
-                        int[] feedback = { 1 };
-                        minigameOverheadScript.instance.miniFeedback(feedback);
-                    }
+                
+                // If we hit a specific node, there may be some functions to run
+                int nodeType = currentNode.GetComponent<nodeScript>().nodeType;
+                switch (nodeType) {
+                    case 2: audioManagerScript.instance.playfxSound(7); break;
+                    case 4: stop = 1; break;
+                    case 5:
+                        if (cameraScript.instance.transform.localPosition.y < 3.2f) {
+                            getHit(10);
+                            // Code 10000, 0 : Wreck current act's interactable obstacle
+                            gameData[0] = 10000 + nodes - 2;
+                            gameData[1] = 0;
+                            int[] feedback = { 2 };
+                            minigameOverheadScript.instance.miniFeedback(feedback);
+                        } else {
+                            int[] feedback = { 1 };
+                            minigameOverheadScript.instance.miniFeedback(feedback);
+                        }
+                    break;
+                    case 6: stop = -1; break;
+                    case 7: 
+                        if (failedAct) {
+                            getHit(30);
+                        } else { 
+                            int[] feedback = { 0 };
+                            minigameOverheadScript.instance.miniFeedback(feedback);
+                        }
+                        StopCoroutine("stopPlayer");
+                    break;
+                    case 8:
+                        if (gameData[nodes + 2] / 100 == 1 && lane == -1 || 
+                            (gameData[nodes + 2] % 100) / 10 == 1 && lane == 0 ||
+                            gameData[nodes + 2] % 10 == 1 && lane == 1) {
+                            getHit(10);
+                            // Code 10000, 0 : Shake current act's interactable obstacle
+                            gameData[0] = 10000 + nodes - 2;
+                            gameData[1] = 0;
+                        } else { 
+                            int[] feedback = { 0 };
+                            minigameOverheadScript.instance.miniFeedback(feedback);
+                        }
+                    break;
+                    case 9:
+                        stop = 9;
+                    break;
                 }
-                if (currentNode.GetComponent<nodeScript>().nodeType == 6)
-                    stop = -1;
-                if (currentNode.GetComponent<nodeScript>().nodeType == 7) {
-                    if (failedAct) {
-                        getHit(30);
-                    } else { 
-                        int[] feedback = { 0 };
-                        minigameOverheadScript.instance.miniFeedback(feedback);
-                    }
-                    StopCoroutine("stopPlayer");
-                }
+                if (nodeType != 8)
+                    lane = 0;
+
             } else if (nextNode.GetComponent<nodeScript>().nodeType == 5) {
                 if (!warned) {
                     if (Vector3.Distance(nextNode.transform.position, transform.position) < 10.0f) {
@@ -190,21 +218,39 @@ public class playerScript : MonoBehaviour {
                         warned = true;
                     }
                 }
+            } else if (nextNode.GetComponent<nodeScript>().nodeType == 8) {
+                cameraScript.instance.transform.localPosition = Vector3.MoveTowards(cameraScript.instance.transform.localPosition,
+                    new Vector3(lane * 6, 2.5f, 0), Time.deltaTime * 20f);
             }
         } else { 
             UI.decreaseTime = false;
         }
 
         // Makes sure the player is facing the right way during movement
-        if (currentNode != null)
+        if (currentNode != null) {
             transform.rotation = Quaternion.Slerp(
-                eyes.transform.rotation,
+                cameraScript.instance.transform.rotation,
                 currentNode.transform.rotation,
+                Time.deltaTime * 10);
+            // When encountering this node we want to return the camera to its original position
+            if (currentNode.GetComponent<nodeScript>().nodeType == 3) {
+                cameraScript.instance.transform.localPosition = Vector3.MoveTowards(cameraScript.instance.transform.localPosition,
+                    new Vector3(0, 2.5f, 0), Time.deltaTime * 40f);
+                cameraScript.instance.transform.rotation = Quaternion.Slerp(
+                    cameraScript.instance.transform.rotation,
+                    Quaternion.Euler(0, 0, 0),
+                    Time.deltaTime * 10);
+            }
+        }
+        if (stop == 9)
+            cameraScript.instance.transform.rotation = Quaternion.Slerp(
+                cameraScript.instance.transform.rotation,
+                Quaternion.Euler(0, -90, 0),
                 Time.deltaTime * 10);
 
         // Moves the camera parabolically when jumping
         if (jumping) {
-            eyes.transform.position += new Vector3(0, jumpheight, 0);
+            cameraScript.instance.transform.position += new Vector3(0, jumpheight, 0);
             jumpheight -= 0.016f;
         }
 
@@ -222,12 +268,18 @@ public class playerScript : MonoBehaviour {
                     gameData[1] = 2;
                     minigameOverheadScript.instance.miniFeedback(feedback);
                 }
+                else if (actType == 5) {
+                    stop = 0;
+                    gameData[0] = 10001;
+                    gameData[1] = 0;
+                }
             }
         }
     }
 
     // We need to do key input in Update() because it updates every frame
     void Update() { 
+        // Controls for Beat-Up
         if (actType == 1) { 
             if (currentNode.GetComponent<nodeScript>().nodeType == 4) { 
                 if (Input.anyKeyDown) {
@@ -240,6 +292,7 @@ public class playerScript : MonoBehaviour {
                 }
             }
         }
+        // Controls for Hurdle Jump
         else if (actType == 2) { 
             if (!jumping) {
                 if (Input.GetKeyDown("space")) {
@@ -248,11 +301,26 @@ public class playerScript : MonoBehaviour {
                 }
             }
         }
-        if (actType == 3) { 
-            if (currentNode.GetComponent<nodeScript>().nodeType == 6) { 
-                if (Input.anyKeyDown) {
+        // Controls for Silent Crossing
+        else if (actType == 3) { 
+            if (Input.anyKeyDown) {
+                if (currentNode.GetComponent<nodeScript>().nodeType == 6) { 
                     stop = 0;
                     failedAct = true;
+                }
+            }
+        }
+        // Controls for Look Out
+        else if (actType == 4) {
+            if (Input.GetKeyDown("a")) {
+                audioManagerScript.instance.playfxSound(7);
+                if (nextNode.GetComponent<nodeScript>().nodeType == 8) {
+                    lane -= lane > -1 ? 1 : 0;
+                }
+            } else if (Input.GetKeyDown("d")) {
+                audioManagerScript.instance.playfxSound(7);
+                if (nextNode.GetComponent<nodeScript>().nodeType == 8) {
+                    lane += lane < 1 ? 1 : 0;
                 }
             }
         }

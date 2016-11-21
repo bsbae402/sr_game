@@ -11,6 +11,8 @@ public class nodeScript : MonoBehaviour {
     5 = Act-Type-2 Jump
     6 = Act-Type-3 Stop
     7 = Act-Type-3 Get-Hit
+    8 = Act-Type-4 People Group
+    9 = Act-Type-5 Lever Turn
     99 = Stage Complete
     ***********************/
     public int nodeType;

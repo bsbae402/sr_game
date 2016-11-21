@@ -9,8 +9,8 @@ public class levelConstructionScript : MonoBehaviour {
     public Transform[] tileBase;
     // Possible values passed on by the level init obstacles, as well as the corresponding act tiles
     // Add more as we make more minigames
-    int[] validTiles =  {       -1,  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19,  20, 21, 22, 23, 24, 25, 26, 27, 28, 29,  30, 31, 32, 33, 34, 35, 36, 37, 38, 39 };
-    int[] CorrespondingTile = { -1, -1, 0, 1, 2, 3, 0, 1, 2, 3, 0,  -1,  4,  4,  4,  4,  4,  4,  4,  4,  4,  -1,  5,  6,  7,  5,  6,  7,  5,  6,  7,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8  };
+    int[] validTiles =  {       -1,  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19,  20, 21, 22, 23, 24, 25, 26, 27, 28, 29,  30, 31, 32, 33, 34, 35, 36, 37, 38, 39,  40, 41, 42, 43, 44, 45, 46, 47, 48, 49,  50, 51, 52, 53, 54, 55, 56, 57, 58, 59 };
+    int[] CorrespondingTile = { -1, -1, 0, 1, 2, 3, 0, 1, 2, 3, 0,  -1,  4,  5,  6,  4,  5,  6,  4,  5,  6,  -1,  7,  8,  9,  7,  8,  9,  7,  8,  9,  -1, 10, 10, 10, 10, 10, 10, 10, 10, 10,  -1, 11, 12, 11, 12, 11, 12, 11, 12, 11,  -1, 13, 13, 13, 13, 13, 13, 13, 13, 13 };
 
     // Where the tiles themselves are held
     [HideInInspector]
@@ -165,18 +165,25 @@ public class levelConstructionScript : MonoBehaviour {
         // Code {1xxxx, 0} - The player wishes to interact with the data%10000th element of the act's interactable obstacles
         // Code {1xxxx, 1} - The player wishes to remove the data%10000th element of the act's interactable obstacles
         // Code {1xxxx, 2} - Same as previous, but the player failed the stage
+        // Code {2xxxx, y} - Interact with data%10000th element of act's interactable obstacles and add y to score
         if (playerScript.instance.gameData[0] / 10000 == 1) {
             tiles[playerScript.instance.currentAct].GetComponent<actScript>().
                 interactWithObstacle(playerScript.instance.gameData[0] % 10000);
             if (playerScript.instance.gameData[1] >= 1) {
                 tiles[playerScript.instance.currentAct].GetComponent<actScript>().
                     removeObstacle(playerScript.instance.gameData[0] % 10000);
-                System.Array.Clear(playerScript.instance.gameData, 0, 10);
             }
+        } else if (playerScript.instance.gameData[0] / 20000 == 1) {
+            tiles[playerScript.instance.currentAct].GetComponent<actScript>().
+                interactWithObstacle(playerScript.instance.gameData[0] % 10000);
+            int[] feedback = { playerScript.instance.gameData[1] };
+            minigameOverheadScript.instance.miniFeedback(feedback);
         }
+        playerScript.instance.gameData[0] = 0;
+        playerScript.instance.gameData[1] = 0;
 
         // The player has been hit, so they will slow down
-        if(playerScript.instance.hit) {
+        if (playerScript.instance.hit) {
             speed = 0f;
             playerScript.instance.hit = false;
         }

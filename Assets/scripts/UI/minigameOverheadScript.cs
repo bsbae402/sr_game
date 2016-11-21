@@ -9,6 +9,7 @@ public class minigameOverheadScript : MonoBehaviour {
     // Unfortunately there's no optimized and generalized algorithm for sorting them
     // We'll have to hardcode their usage, plus with additional minigames
     public GameObject[] components;
+    Quaternion previousLeverRotation;
 
     // Another hard coded piece for a single minigame..
     // There's no other way to do this unfortunately
@@ -18,7 +19,7 @@ public class minigameOverheadScript : MonoBehaviour {
     // the arrows we make.
     arrowScript[] activeArrows;
     // Hard coded piece for the beat-em-up minigame
-    int obstaclehealth;
+    float obstaclehealth;
 
     // Not that important
     // Transforms used for decoration of the level
@@ -40,6 +41,10 @@ public class minigameOverheadScript : MonoBehaviour {
             instance = this;
         else
             Destroy(gameObject);
+    }
+
+    void Start() {
+        previousLeverRotation = components[6].transform.rotation;
     }
 
     // Sets all the components invisible before the selection of a new minigame
@@ -73,8 +78,8 @@ public class minigameOverheadScript : MonoBehaviour {
             if (components[2].transform.localPosition.x <= -800) {
                 score.GetComponent<performanceScript>().score += actPerformance;
                 actPerformance = 0;
-                playerScript.instance.stop = 0;
                 playerScript.instance.gameData[1] = 1;
+                playerScript.instance.stop = 0;
                 playerScript.instance.UI.decreaseTime = false;
             }
         }
@@ -90,6 +95,12 @@ public class minigameOverheadScript : MonoBehaviour {
         }
         else if (currentAct == 3) {
             score.GetComponent<performanceScript>().score += 800;
+        }
+        else if (currentAct == 4) {
+            score.GetComponent<performanceScript>().score += 100;
+        }
+        else if (currentAct == 5) {
+            score.GetComponent<performanceScript>().score += feedbackData[0];
         }
     }
 
@@ -140,55 +151,68 @@ public class minigameOverheadScript : MonoBehaviour {
         actPerformance = 0;
         resetComponents();
         puffOverhead();
-        // Alleyway-Navigation
-        if (actType == 0) {
-            components[0].GetComponent<CanvasGroup>().alpha = 1;
-            int dist = 0;
-            int type = 0;
-            float x = 0;
-            activeArrows = new arrowScript[gameData.Length];
-            for (int i = 0; i < gameData.Length; i++) {
-                dist = gameData[i] % 100;
-                type = gameData[i] / 100;
-                if (type == 0)
-                    x = -247;
-                else if (type == 1)
-                    x = -157f;
-                else if (type == 2)
-                    x = -335f;
-                var arrow = Instantiate(arrows[type]) as RectTransform;
-                activeArrows[i] = arrow.GetComponent<arrowScript>();
-                arrow.SetParent(GetComponent<RectTransform>());
-                arrow.localScale = new Vector3(1, 1, 1);
-                arrow.localPosition = Vector3.zero;
-                // I swear to god this is the worst
-                arrow.localPosition += new Vector3(x, -60 * dist + 120);
-            }
-        }
-        // Obstacle Beat-Em-Up
-        else if (actType == 1) {
-            // Show the health bar
-            components[1].GetComponent<CanvasGroup>().alpha = 1;
-            components[2].GetComponent<CanvasGroup>().alpha = 1;
-            // Set obstaclehealth as total health of the obstacle
-            obstaclehealth = gameData[0];
-        }
-        // Hurdle Jump
-        else if (actType == 2) { 
+        switch (actType) {
+            // Alleyway-Navigation
+            case 0:
+                components[0].GetComponent<CanvasGroup>().alpha = 1;
+                int dist = 0;
+                int type = 0;
+                float x = 0;
+                activeArrows = new arrowScript[gameData.Length];
+                for (int i = 0; i < gameData.Length; i++) {
+                    dist = gameData[i] % 100;
+                    type = gameData[i] / 100;
+                    if (type == 0)
+                        x = -247;
+                    else if (type == 1)
+                        x = -157f;
+                    else if (type == 2)
+                        x = -335f;
+                    var arrow = Instantiate(arrows[type]) as RectTransform;
+                    activeArrows[i] = arrow.GetComponent<arrowScript>();
+                    arrow.SetParent(GetComponent<RectTransform>());
+                    arrow.localScale = new Vector3(1, 1, 1);
+                    arrow.localPosition = Vector3.zero;
+                    // I swear to god this is the worst
+                    arrow.localPosition += new Vector3(x, -60 * dist + 120);
+                }
+            break;
+            // Obstacle Beatup
+            case 1:
+                // Show the health bar
+                components[1].GetComponent<CanvasGroup>().alpha = 1;
+                components[2].GetComponent<CanvasGroup>().alpha = 1;
+                // Set obstaclehealth as total health of the obstacle
+                obstaclehealth = gameData[0];
+            break;
+            // Hurdle Jump
+            case 2:
 
-        }
-        // Silent Crossing
-        else if (actType == 3) {
-            StartCoroutine(playerScript.instance.stopPlayer(gameData[0]));
-        }
-        // Ending scene
-        // We need a lot of congratulatory effects
-        else if (actType == 1000) {
-            StartCoroutine(finishPuffs());
-            components[3].GetComponent<CanvasGroup>().alpha = 1;
-            components[3].GetComponent<CanvasGroup>().blocksRaycasts = true;
-            components[4].GetComponent<CanvasGroup>().alpha = 1;
-            components[4].GetComponent<CanvasGroup>().blocksRaycasts = true;
+            break;
+            // Silent Crossing
+            case 3:
+                StartCoroutine(playerScript.instance.stopPlayer(gameData[0]));
+            break;
+            // Look Out
+            case 4:
+                playerScript.instance.useGameData(gameData);
+            break;
+            // Drawbridge
+            case 5:
+                obstaclehealth = gameData[0];
+                actPerformance = gameData[0];
+                components[6].GetComponent<CanvasGroup>().alpha = 1;
+                components[7].GetComponent<CanvasGroup>().alpha = 1;
+                break;
+            // Ending scene
+            // We need a lot of congratulatory effects
+            case 1000:
+                StartCoroutine(finishPuffs());
+                components[3].GetComponent<CanvasGroup>().alpha = 1;
+                components[3].GetComponent<CanvasGroup>().blocksRaycasts = true;
+                components[4].GetComponent<CanvasGroup>().alpha = 1;
+                components[4].GetComponent<CanvasGroup>().blocksRaycasts = true;
+            break;
         }
     }
 
@@ -230,6 +254,22 @@ public class minigameOverheadScript : MonoBehaviour {
                         return;
                     }
                 }
+            }
+        } else if (currentAct == 5) {
+            if (5 - 4.5f * (1 - obstaclehealth / actPerformance) <= 0.5 && playerScript.instance.stop != 0) {
+                components[6].transform.localScale = new Vector3(
+                    5 - 4.5f * (1 - obstaclehealth / actPerformance), 5 - 4.5f * (1 - obstaclehealth / actPerformance), 0);
+                playerScript.instance.stop = 0;
+                playerScript.instance.gameData[0] = 20001;
+                playerScript.instance.gameData[1] = actPerformance / 3;
+            } else if(playerScript.instance.stop != 0) {
+                components[6].transform.localScale = new Vector3(
+                    5 - 4.5f * (1 - obstaclehealth / actPerformance), 5 - 4.5f * (1 - obstaclehealth / actPerformance), 0);
+                components[6].transform.localEulerAngles = new Vector3(0, 0,
+                    Mathf.Atan2(((Input.mousePosition.y - Screen.height / 2f) - components[6].transform.localPosition.y),
+                    ((Input.mousePosition.x - Screen.width / 2f) - components[6].transform.position.x)) * Mathf.Rad2Deg - 90);
+                obstaclehealth -= (int)Quaternion.Angle(components[6].transform.rotation, previousLeverRotation);
+                previousLeverRotation = components[6].transform.rotation;
             }
         }
     }
