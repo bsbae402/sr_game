@@ -52,6 +52,8 @@ public class obstacleScript : MonoBehaviour {
             } else if (obstacleType == 0) {
                 shake++;
             }
+        } else if (actType == 6) {
+            GetComponent<Animator>().SetBool("DoorOpened", true);
         }
     }
     public void remove() {

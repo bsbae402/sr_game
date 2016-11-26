@@ -2993,7 +2993,7 @@ MonoBehaviour:
   levelName: Test
   sceneName: Level
   description: Test
-  obstacles: 32000000280000002800000028000000
+  obstacles: 3d000000320000002800000028000000
   stageSpeed: 1
 --- !u!4 &1756951705
 Transform:

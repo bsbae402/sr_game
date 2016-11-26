@@ -13,6 +13,7 @@ public class nodeScript : MonoBehaviour {
     7 = Act-Type-3 Get-Hit
     8 = Act-Type-4 People Group
     9 = Act-Type-5 Lever Turn
+    10 = Act-Type-6 Norman Door Push or Pull
     99 = Stage Complete
     ***********************/
     public int nodeType;

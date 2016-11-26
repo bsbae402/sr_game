@@ -204,6 +204,11 @@ public class minigameOverheadScript : MonoBehaviour {
                 components[6].GetComponent<CanvasGroup>().alpha = 1;
                 components[7].GetComponent<CanvasGroup>().alpha = 1;
                 break;
+            case 6:
+                //// player.gameData[] : [0~3] are unusable, but we can use from 4 to 19
+                //// use them for the door types (push=0, pull=1)
+                playerScript.instance.useGameData(gameData);
+            break;
             // Ending scene
             // We need a lot of congratulatory effects
             case 1000:
