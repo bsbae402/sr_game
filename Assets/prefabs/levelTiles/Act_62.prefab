@@ -4040,7 +4040,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actType: 6
   actLength: 100
-  timeLimit: 9
+  timeLimit: 14
+  tutorial: 0
   firstNode: {fileID: 1000010405780448}
   gameData: 01000000010000000000000001000000000000000000000001000000
   interactiveObstacles:
