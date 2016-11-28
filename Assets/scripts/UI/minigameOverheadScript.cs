@@ -102,6 +102,9 @@ public class minigameOverheadScript : MonoBehaviour {
         else if (currentAct == 5) {
             score.GetComponent<performanceScript>().score += feedbackData[0];
         }
+        else if (currentAct == 6) {
+            score.GetComponent<performanceScript>().score += 100;
+        }
     }
 
     void hitMark() {

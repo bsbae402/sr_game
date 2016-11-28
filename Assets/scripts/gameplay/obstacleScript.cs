@@ -53,7 +53,12 @@ public class obstacleScript : MonoBehaviour {
                 shake++;
             }
         } else if (actType == 6) {
-            GetComponent<Animator>().SetBool("DoorOpened", true);
+            if (playerScript.instance.wrongInput) {
+                shake = 10.0f;
+            }
+            else
+                GetComponent<Animator>().SetBool("DoorOpened", true);
+            
         }
     }
     public void remove() {
@@ -98,6 +103,16 @@ public class obstacleScript : MonoBehaviour {
             if (obstacleType == 0)
                 transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y,
                     -minigameOverheadScript.instance.components[6].transform.localEulerAngles.z);
+        }
+        else if (actType == 6) {
+            if(shake > 0.0f) {
+                transform.localPosition = originalPosition + Random.insideUnitSphere * shake * 0.02f;
+                shake -= 0.4f;
+                if(shake <= 0.0f) {
+                    shake = 0.0f;
+                    playerScript.instance.wrongInput = false;
+                }
+            }
         }
     }
 }

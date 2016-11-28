@@ -53,7 +53,11 @@ public class playerScript : MonoBehaviour {
     public int lane = 0;
 
     //# used in Norman Doors. Set if plyr pressed correct button before contact the door
-    bool doorOpening = false;
+    [HideInInspector]
+    public bool doorOpening = false;
+    //# used in Norman Doors. Set if plyr pressed wrong button
+    [HideInInspector]
+    public bool wrongInput = false;
 
     void Awake() {
         if (instance == null)
@@ -287,6 +291,43 @@ public class playerScript : MonoBehaviour {
                     gameData[0] = 10001;
                     gameData[1] = 0;
                 }
+                else if (actType == 6) {
+                    wrongInput = false;
+                    doorOpening = false;
+                    warned = false;
+
+                    int numOfOpened;
+                    //# failed while standing at the door
+                    if(stop==10) 
+                        numOfOpened = nodes - 2;
+
+                    //# failed while moving
+                    else 
+                        numOfOpened = nodes - 1;
+
+                    //// debug
+                    int sdf = minigameOverheadScript.instance.score.GetComponent<performanceScript>().score;
+                    minigameOverheadScript.instance.score.GetComponent<performanceScript>().score -= numOfOpened * 100;
+
+                    //## open all remained doors ahead. when feedbacking, make sure the score will not increase.
+                    actScript normDrActScr = levelConstructionScript.instance.tiles[currentAct].GetComponent<actScript>();
+                    int numOfDoors = normDrActScr.interactiveObstacles.Length;
+
+                    //# there is 4 doors. if you opened 1 door, then 3 doors remained. start from the index of 1.
+                    for(int i = numOfOpened; i < numOfDoors; i++) {
+                        obstacleScript doorObsScr = normDrActScr.interactiveObstacles[i].GetComponent<obstacleScript>();
+                        doorObsScr.interact();
+                    }
+
+                    //# find the exit node of the act
+                    GameObject actExitNode = currentNode;
+                    //# caution: infinite loop possible!
+                    while(actExitNode.GetComponent<nodeScript>().nodeType != 1) {
+                        actExitNode = actExitNode.GetComponent<nodeScript>().nextNode;
+                    }
+                    nextNode = actExitNode;
+                    stop = 0;
+                }
             }
         }
     }
@@ -341,68 +382,103 @@ public class playerScript : MonoBehaviour {
 
         //# controls for Norman Doors
         else if (actType == 6) {
-            //# if: plyr stopped in front of the current door node
-            if (stop == 10) {
-                int currentDoorIth = nodes - 2;     //// start from 0-th element
-                //// push
-                if (Input.GetKeyDown("left shift")) {
-                    if (gameData[4 + currentDoorIth] == 0) {
-                        stop = 0;   //// move player again if correct key is pressed
-                    }
-                }
-                //// pull
-                else if (Input.GetKeyDown("right shift")) {
-                    if (gameData[4 + currentDoorIth] == 1) {
-                        stop = 0;
-                    }
-                }
-
-                //// use Code {10002, 0} to interact with 2nd element of the act
-                //// <int>nodes is ++ when each act passes.
-                //// nodes count starts from 1. And the initial currentNode is the 1st node(type 0).
-                //// After conatact of the 2nd node (== first normand door node) , it will be 2.
-                //// before plr reach first norman door node(type 10), it is still 1.
-                if (stop == 0) {
-                    warned = false;
-                    doorOpening = false;
-                    gameData[0] = 10000 + currentDoorIth;
-                    gameData[1] = 0;
-                }
-            }
-
-            //# else: plyr is moving toward the next door node
-            else {
-                if (doorOpening == false) {
-                    if (warned == false) {
-                        if (nextNode.GetComponent<nodeScript>().nodeType == 10) {
-                            //// set warning if the door is at close distance to player
-                            if (Vector3.Distance(nextNode.transform.position, transform.position) < 7.0f)
-                                warned = true;
-                        }
-                    }
-                    else {
-                        int currentDoorIth = nodes - 1;    //// the door currently ahead (start from 0-th)
-                        //// push
-                        if (Input.GetKeyDown("left shift")) {
-                            if (gameData[4 + currentDoorIth] == 0)  {
-                                doorOpening = true;
-                            }
-                        }
-                        //// pull
-                        else if (Input.GetKeyDown("right shift")) {
-                            if (gameData[4 + currentDoorIth] == 1) {
-                                doorOpening = true;
-                            }
-                        }
-
-                        if(doorOpening == true) {
-                            // Code {1xxxx, 0} - The player wishes to interact with the data%10000th element of the act's interactable obstacles
+            if (!wrongInput) {
+                //# if: plyr stopped in front of the current door node
+                if (stop == 10) {
+                    int currentDoorIth = nodes - 2;     //// start from 0-th element
+                    //// push
+                    if (Input.GetKeyDown("left shift")) {
+                        if (gameData[4 + currentDoorIth] == 0) 
+                            stop = 0;   //// move player again if correct key is pressed
+                        else {  //# pressed wrong key
+                                //# the interaction will be the shaking of the door.
                             gameData[0] = 10000 + currentDoorIth;
                             gameData[1] = 0;
+                            wrongInput = true;
+                            audioManagerScript.instance.playfxSound(12);
+                        }
+                    }
+                    //// pull
+                    else if (Input.GetKeyDown("right shift")) {
+                        if (gameData[4 + currentDoorIth] == 1) 
+                            stop = 0;
+                        else {  //# pressed wrong key
+                                //# the interaction will be the shaking of the door.
+                            gameData[0] = 10000 + currentDoorIth;
+                            gameData[1] = 0;
+                            wrongInput = true;
+                            audioManagerScript.instance.playfxSound(12);
+                        }
+                    }
+
+                    //// use Code {10002, 0} to interact with 2nd element of the act
+                    //// <int>nodes is ++ when each act passes.
+                    //// nodes count starts from 1. And the initial currentNode is the 1st node(type 0).
+                    //// After conatact of the 2nd node (== first normand door node) , it will be 2.
+                    //// before plr reach first norman door node(type 10), it is still 1.
+                    if (stop == 0) {
+                        warned = false;
+                        doorOpening = false;
+                        gameData[0] = 10000 + currentDoorIth;
+                        gameData[1] = 0;
+
+                        //# for scoring. feedback data is meaningless.
+                        int[] feedback = { 0 };
+                        minigameOverheadScript.instance.miniFeedback(feedback);
+                    }
+                }
+
+                //# else: plyr is moving toward the next door node
+                else {
+                    if (doorOpening == false) {
+                        if (warned == false) {
+                            if (nextNode.GetComponent<nodeScript>().nodeType == 10) {
+                                //// set warning if the door is at close distance to player
+                                if (Vector3.Distance(nextNode.transform.position, transform.position) < 7.0f)
+                                    warned = true;
+                            }
+                        }
+                        else {
+                            int currentDoorIth = nodes - 1;    //// the door currently ahead (start from 0-th)
+                            //// push
+                            if (Input.GetKeyDown("left shift")) {
+                                if (gameData[4 + currentDoorIth] == 0) 
+                                    doorOpening = true;
+                                else {  //# pressed wrong key
+                                        //# the interaction will be the shaking of the door.
+                                    gameData[0] = 10000 + currentDoorIth;
+                                    gameData[1] = 0;
+                                    wrongInput = true;
+                                    audioManagerScript.instance.playfxSound(12);
+                                }
+                            }
+                            //// pull
+                            else if (Input.GetKeyDown("right shift")) {
+                                if (gameData[4 + currentDoorIth] == 1)
+                                    doorOpening = true;
+                                else {  //# pressed wrong key
+                                        //# the interaction will be the shaking of the door.
+                                    gameData[0] = 10000 + currentDoorIth;
+                                    gameData[1] = 0;
+                                    wrongInput = true;
+                                    audioManagerScript.instance.playfxSound(12);
+                                }
+                            }
+
+                            if (doorOpening == true) {
+                                // Code {1xxxx, 0} - The player wishes to interact with the data%10000th element of the act's interactable obstacles
+                                gameData[0] = 10000 + currentDoorIth;
+                                gameData[1] = 0;
+
+                                //# for scoring. feedback data is meaningless.
+                                int[] feedback = { 0 };
+                                minigameOverheadScript.instance.miniFeedback(feedback);
+                            }
                         }
                     }
                 }
             }
+            
         }
     }
 
