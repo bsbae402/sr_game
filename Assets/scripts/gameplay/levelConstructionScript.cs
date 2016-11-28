@@ -27,6 +27,8 @@ public class levelConstructionScript : MonoBehaviour {
     // We want to make sure everything is set up first
     bool started = false;
 
+    [HideInInspector]
+    public float levelSpeed;
     // The speed in which the stage moves
     // It should also be used to change how fast arrows move
     [HideInInspector]
@@ -75,7 +77,8 @@ public class levelConstructionScript : MonoBehaviour {
     // Finally starts the level with the specified game speed
     IEnumerator levelStart() {
         yield return new WaitForSeconds(1f);
-        Time.timeScale = levelData.GetComponent<levelInitScript>().stageSpeed;
+        levelSpeed = levelData.GetComponent<levelInitScript>().stageSpeed;
+        Time.timeScale = levelSpeed;
         started = true;
         yield return new WaitForSeconds(1f);
         // Don't forget to destroy all preserved but used game objects to prevent overuse of memory
@@ -90,9 +93,15 @@ public class levelConstructionScript : MonoBehaviour {
 
         // Checks for complete randomization or partial randomization
         // t == -1 : Choose any tile at all from any act variant
+        // t > 1000000 : Tutorial; there definitely won't be 100000 minigames, so it should be safe.
         // t % 10 == 0 : Choose any variant from the act
         // We can't use ArrayUtility for searching because UnityEditor is a dumb library
         bool found = false;
+        bool tut = false;
+        if (t >= 1000000) {
+            tut = true;
+            t -= 1000000;
+        }
         for (int i = 0; i < validTiles.Length; i++)
             if (validTiles[i] == t)
                 found = true;
@@ -112,6 +121,7 @@ public class levelConstructionScript : MonoBehaviour {
             if (validTiles[i] == t)
                 index = i;
         var levelTile = Instantiate(tileBase[CorrespondingTile[index]]) as Transform;
+        levelTile.GetComponent<actScript>().tutorial = tut;
         return levelTile;
     }
 
@@ -195,7 +205,7 @@ public class levelConstructionScript : MonoBehaviour {
         int act = playerScript.instance.currentAct;
         if (act + 1 < tiles.Length) {
             if (Vector3.Distance(tiles[act + 1].GetComponent<actScript>().firstNode.transform.position,
-                playerScript.instance.getPosition()) < speed ) {
+                playerScript.instance.getPosition()) < speed) {
                 playerScript.instance.finishAct();
                 playerScript.instance.setPosition(tiles[act + 1].GetComponent<actScript>().firstNode.transform.position);
                 if (act >= 0)
@@ -212,6 +222,8 @@ public class levelConstructionScript : MonoBehaviour {
                     newAct(tiles[act + 1].GetComponent<actScript>().actType, 
                     tiles[act + 1].GetComponent<actScript>().gameData);
                 playerScript.instance.UI.timeLeft = tiles[act + 1].GetComponent<actScript>().timeLimit;
+                if (tiles[act + 1].GetComponent<actScript>().tutorial)
+                    minigameOverheadScript.instance.showTutorial(tiles[act + 1].GetComponent<actScript>().actType);
             }
         }
 	}

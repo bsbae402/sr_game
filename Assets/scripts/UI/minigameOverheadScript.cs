@@ -21,6 +21,9 @@ public class minigameOverheadScript : MonoBehaviour {
     // Hard coded piece for the beat-em-up minigame
     float obstaclehealth;
 
+    // UI components used to show tutorials 
+    public GameObject[] tutorials;
+
     // Not that important
     // Transforms used for decoration of the level
     /****AESTHETIC TYPES****
@@ -222,6 +225,18 @@ public class minigameOverheadScript : MonoBehaviour {
                 components[4].GetComponent<CanvasGroup>().blocksRaycasts = true;
             break;
         }
+    }
+
+    public void showTutorial(int act) {
+        audioManagerScript.instance.playfxSound(13);
+        Time.timeScale = 0.2f;
+        tutorials[act].GetComponent<CanvasGroup>().alpha = 1;
+        StartCoroutine(stopTutorial(act));
+    }
+    IEnumerator stopTutorial(int act) {
+        yield return new WaitForSecondsRealtime(3f);
+        Time.timeScale = levelConstructionScript.instance.levelSpeed;
+        tutorials[act].GetComponent<CanvasGroup>().alpha = 0;
     }
 
     public int increaseScore(int scoring) {

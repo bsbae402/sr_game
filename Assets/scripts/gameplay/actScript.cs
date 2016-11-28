@@ -20,6 +20,7 @@ public class actScript : MonoBehaviour {
     public int actType;
     public int actLength;
     public int timeLimit;
+    public bool tutorial;
     public GameObject firstNode;
     public int[] gameData;
     public GameObject[] interactiveObstacles;

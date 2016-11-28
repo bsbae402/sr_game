@@ -121,7 +121,7 @@ MonoBehaviour:
   sceneName: Level
   description: Velvet cupcakes are on sale now!  Velvet moved closer to the market,
     but there seems to be a lot of city reconstruction lately...
-  obstacles: 0a000000000000000a000000000000000a000000
+  obstacles: 4a420f00000000000a000000000000000a000000
   stageSpeed: 1
 --- !u!4 &136373802
 Transform:
@@ -574,7 +574,7 @@ MonoBehaviour:
   sceneName: Level
   description: Carrot cake is finally on sale!  Unfortunately, Velvet lives pretty
     far away from the market, and needs to take to the alleys.
-  obstacles: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+  obstacles: 40420f00000000000000000000000000000000000000000000000000000000000000000000000000
   stageSpeed: 1
 --- !u!4 &432749042
 Transform:
