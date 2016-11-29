@@ -30,7 +30,7 @@ public class actScript : MonoBehaviour {
         StartCoroutine(die());
     }
     IEnumerator die() {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(8f);
         Destroy(gameObject);
     }
 

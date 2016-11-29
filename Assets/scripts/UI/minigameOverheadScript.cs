@@ -229,12 +229,12 @@ public class minigameOverheadScript : MonoBehaviour {
 
     public void showTutorial(int act) {
         audioManagerScript.instance.playfxSound(13);
-        Time.timeScale = 0.2f;
+        Time.timeScale = 0.1f;
         tutorials[act].GetComponent<CanvasGroup>().alpha = 1;
         StartCoroutine(stopTutorial(act));
     }
     IEnumerator stopTutorial(int act) {
-        yield return new WaitForSecondsRealtime(3f);
+        yield return new WaitForSecondsRealtime(4f);
         Time.timeScale = levelConstructionScript.instance.levelSpeed;
         tutorials[act].GetComponent<CanvasGroup>().alpha = 0;
     }
