@@ -971,7 +971,7 @@ MonoBehaviour:
   sceneName: Level
   description: Carrot cake is finally on sale!  Unfortunately, Velvet lives pretty
     far away from the market, and needs to take to the alleys.
-  obstacles: 40420f00000000000000000000000000000000000000000000000000000000000000000000000000
+  obstacles: 40420f00000000000000000000000000
   stageSpeed: 1
 --- !u!4 &432749042
 Transform:

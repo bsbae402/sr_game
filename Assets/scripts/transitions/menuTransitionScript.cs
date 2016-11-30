@@ -81,11 +81,11 @@ public class menuTransitionScript : MonoBehaviour {
             if( slides[i] != null )
                 slides[i].GetComponent<CanvasGroup>().alpha = 0;
         }
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
         for (int i = 0; i < slides.Length; i++) {
             Destroy(slides[i]);
         }
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
         Destroy(transform.parent.gameObject);
         Destroy(gameObject);
     }
