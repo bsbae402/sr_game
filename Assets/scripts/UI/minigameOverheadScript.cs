@@ -63,6 +63,8 @@ public class minigameOverheadScript : MonoBehaviour {
     // yet another arbitrary set of data
     // It will increase the act performance as well as handle cute effects
     public void miniFeedback(int[] feedbackData) {
+        if (score.gameObject == null)
+            return;
         // Arrows provide feedback for the alleyway navigation minigame
         if (currentAct == 0) {
             if (feedbackData[0] >= 4) {
