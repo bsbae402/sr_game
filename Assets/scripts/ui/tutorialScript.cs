@@ -17,7 +17,8 @@ public class tutorialScript : MonoBehaviour {
 	void Update () {
         if (GetComponent<CanvasGroup>().alpha < 1)
             return;
-
+        if (actType < 0)
+            return;
 	    if (counter % 30 == 14) {
             GetComponent<Image>().sprite = Resources.Load<Sprite>("Tutorial-" + (actType + 1) + "-1");
         } else if (counter % 30 == 29) {

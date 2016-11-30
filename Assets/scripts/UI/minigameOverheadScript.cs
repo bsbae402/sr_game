@@ -23,6 +23,7 @@ public class minigameOverheadScript : MonoBehaviour {
 
     // UI components used to show tutorials 
     public GameObject[] tutorials;
+    public GameObject[] powerTutorials;
 
     // Not that important
     // Transforms used for decoration of the level
@@ -73,6 +74,8 @@ public class minigameOverheadScript : MonoBehaviour {
         }
         else if (currentAct == 1) {
             components[2].transform.localPosition += new Vector3(-800 / obstaclehealth, 0, 0);
+            if (playerScript.instance.powerActive[1])
+                components[2].transform.localPosition += new Vector3(-800 / obstaclehealth, 0, 0);
             if (feedbackData.Length == 2) {
                 components[2].transform.localPosition += new Vector3(-800, 0, 0);
             }
@@ -225,6 +228,17 @@ public class minigameOverheadScript : MonoBehaviour {
                 components[4].GetComponent<CanvasGroup>().blocksRaycasts = true;
             break;
         }
+    }
+    public void showPowerTutorial() {
+        audioManagerScript.instance.playfxSound(13);
+        Time.timeScale = 0.1f;
+        powerTutorials[0].GetComponent<CanvasGroup>().alpha = 1;
+        StartCoroutine(stopPowerTutorial());
+    }
+    IEnumerator stopPowerTutorial() {
+        yield return new WaitForSecondsRealtime(4f);
+        Time.timeScale = levelConstructionScript.instance.levelSpeed;
+        powerTutorials[0].GetComponent<CanvasGroup>().alpha = 0;
     }
 
     public void showTutorial(int act) {

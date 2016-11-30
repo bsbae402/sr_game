@@ -4341,7 +4341,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actType: 6
   actLength: 100
-  timeLimit: 14
+  timeLimit: 12
   tutorial: 0
   firstNode: {fileID: 1000013168968374}
   gameData: 00000000010000000100000000000000000000000000000001000000

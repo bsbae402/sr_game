@@ -12,6 +12,7 @@ public class levelListScript : MonoBehaviour {
     public GameObject[] levels;
     public GameObject[] levelListings;
     public GameObject description;
+    public GameObject start;
     int scroll, selected;
 
     // We don't want to update every frame because that's costly
@@ -67,7 +68,9 @@ public class levelListScript : MonoBehaviour {
             if (selected != -1 && selected < levels.Length) { 
                 description.GetComponentInChildren<Text>().text = 
                     levels[selected].GetComponent<levelInitScript>().description;
-                GetComponentInChildren<CanvasGroup>().alpha = 1;
+                start.GetComponent<CanvasGroup>().alpha = 1;
+                start.GetComponent<CanvasGroup>().interactable = true;
+                start.GetComponent<CanvasGroup>().blocksRaycasts = true;
             }
             // When we press a scroll button, we have to update as well
 	        for(int i = 0; i < levelListings.Length; i++) {

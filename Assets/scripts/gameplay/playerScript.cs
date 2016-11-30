@@ -28,6 +28,10 @@ public class playerScript : MonoBehaviour {
     public Vector3 angle;
 
     [HideInInspector]
+    public bool[] powerActive;
+    public int[] powerCooldown;
+
+    [HideInInspector]
     // levelConstruction's record of the movement speed will slow down
     // when it detects that the player has been hit
     public bool hit = false;
@@ -74,7 +78,22 @@ public class playerScript : MonoBehaviour {
         actType = -1;
         angle = GetComponentInChildren<Camera>().transform.forward;
         gameData = new int[20];
-	}
+        
+        if (playerStats.instance != null) {
+            powerActive = new bool[playerStats.instance.powers.Length];
+            powerCooldown = new int[playerStats.instance.powers.Length];
+            if (playerStats.instance.powers[1]) {
+                powerActive[1] = true;
+                powerCooldown[1] = 10000000;
+            } else if (playerStats.instance.powers[2]) {
+                powerActive[2] = true;
+                powerCooldown[2] = 10000000;
+            }
+        } else {
+            powerActive = new bool[20];
+            powerCooldown = new int[20];
+        }
+    }
 
     public Vector3 getPosition() {
         return transform.position;
@@ -102,6 +121,18 @@ public class playerScript : MonoBehaviour {
         invincible = false;
     }
 
+    public void powerCool() {
+        for (int i = 0; i < powerActive.Length; i++) {
+            powerCooldown[i]--;
+            if (powerCooldown[i] <= 0) {
+                powerCooldown[i] = 0;
+                powerActive[i] = false;
+            }
+        }
+        if (powerCooldown[0] == 4 && powerActive[0])
+            getHit(-100, 0f, false);
+    }
+
     // Used to stop the jumping mechanic after a small amount of time
     IEnumerator jump() {
         yield return new WaitForSeconds(0.5f);
@@ -110,9 +141,12 @@ public class playerScript : MonoBehaviour {
         jumping = false;
     }
 
-    // Stop the player for a certain amount of time
+    // Stop the player for a certain amount of time 
+    // ONLY FOR SILENT CROSSING
     public IEnumerator stopPlayer(float time) {
         yield return new WaitForSeconds(time);
+        gameData[0] = 10000;
+        gameData[1] = 3;
         stop = 0;
     }
 
@@ -138,6 +172,7 @@ public class playerScript : MonoBehaviour {
             audioManagerScript.instance.playfxSound(5);
         }
         UI.updateScore(minigameOverheadScript.instance.increaseScore((int)UI.timeLeft * 20));
+        powerCool();
         nodes = 1;
     }
 
@@ -153,7 +188,7 @@ public class playerScript : MonoBehaviour {
         if (nextNode.GetComponent<nodeScript>().nodeType == 99) { 
             if (Vector3.Distance(nextNode.transform.position, transform.position) < movementSpeed) {
                 transform.position = nextNode.transform.position;
-                UI.hit(-1000);
+                UI.hit(-10000);
                 stop = 99;
             }
         }
@@ -176,7 +211,8 @@ public class playerScript : MonoBehaviour {
                     case 4: stop = 1; break;
                     case 5:
                         if (cameraScript.instance.transform.localPosition.y < 3.2f) {
-                            getHit(10);
+                            if (!powerActive[1])
+                                getHit(10);
                             // Code 10000, 0 : Wreck current act's interactable obstacle
                             gameData[0] = 10000 + nodes - 2;
                             gameData[1] = 0;
@@ -188,7 +224,9 @@ public class playerScript : MonoBehaviour {
                         }
                     break;
                     case 6: stop = -1; break;
-                    case 7: 
+                    case 7:
+                        gameData[0] = 10000;
+                        gameData[1] = 3;
                         if (failedAct) {
                             getHit(30);
                         } else { 
@@ -201,7 +239,8 @@ public class playerScript : MonoBehaviour {
                         if (gameData[nodes + 2] / 100 == 1 && lane == -1 || 
                             (gameData[nodes + 2] % 100) / 10 == 1 && lane == 0 ||
                             gameData[nodes + 2] % 10 == 1 && lane == 1) {
-                            getHit(10);
+                            if (!powerActive[1])
+                                getHit(10);
                             // Code 10000, 0 : Shake current act's interactable obstacle
                             gameData[0] = 10000 + nodes - 2;
                             gameData[1] = 0;
@@ -213,12 +252,9 @@ public class playerScript : MonoBehaviour {
                     case 9:
                         stop = 9;
                     break;
-                    //# Norman Door Act
                     case 10:
-                        if(!doorOpening) {
+                        if(!doorOpening)
                             stop = 10;
-                        }
-                        //# else: if player already pressed correct key
                         else {
                             warned = false;
                             doorOpening = false;
@@ -227,7 +263,6 @@ public class playerScript : MonoBehaviour {
                 }
                 if (nodeType != 8)
                     lane = 0;
-
             } else if (nextNode.GetComponent<nodeScript>().nodeType == 5) {
                 if (!warned) {
                     if (Vector3.Distance(nextNode.transform.position, transform.position) < 10.0f) {
@@ -285,46 +320,31 @@ public class playerScript : MonoBehaviour {
                     gameData[0] = 10000;
                     gameData[1] = 2;
                     minigameOverheadScript.instance.miniFeedback(feedback);
-                }
-                else if (actType == 5) {
+                } else if (actType == 5) {
                     stop = 0;
                     gameData[0] = 10001;
                     gameData[1] = 0;
-                }
-                else if (actType == 6) {
+                } else if (actType == 6) {
                     wrongInput = false;
                     doorOpening = false;
                     warned = false;
-
                     int numOfOpened;
-                    //# failed while standing at the door
-                    if(stop==10) 
+                    if (stop == 10) 
                         numOfOpened = nodes - 2;
-
-                    //# failed while moving
                     else 
                         numOfOpened = nodes - 1;
-
-                    //// debug
                     int sdf = minigameOverheadScript.instance.score.GetComponent<performanceScript>().score;
                     minigameOverheadScript.instance.score.GetComponent<performanceScript>().score -= numOfOpened * 100;
-
-                    //## open all remained doors ahead. when feedbacking, make sure the score will not increase.
                     actScript normDrActScr = levelConstructionScript.instance.tiles[currentAct].GetComponent<actScript>();
                     int numOfDoors = normDrActScr.interactiveObstacles.Length;
-
-                    //# there is 4 doors. if you opened 1 door, then 3 doors remained. start from the index of 1.
                     for(int i = numOfOpened; i < numOfDoors; i++) {
                         obstacleScript doorObsScr = normDrActScr.interactiveObstacles[i].GetComponent<obstacleScript>();
                         doorObsScr.interact();
                     }
-
-                    //# find the exit node of the act
                     GameObject actExitNode = currentNode;
                     //# caution: infinite loop possible!
-                    while(actExitNode.GetComponent<nodeScript>().nodeType != 1) {
+                    while(actExitNode.GetComponent<nodeScript>().nodeType != 1)
                         actExitNode = actExitNode.GetComponent<nodeScript>().nextNode;
-                    }
                     nextNode = actExitNode;
                     stop = 0;
                 }
@@ -334,6 +354,12 @@ public class playerScript : MonoBehaviour {
 
     // We need to do key input in Update() because it updates every frame
     void Update() { 
+
+        if (Input.GetKeyDown(KeyCode.Tab) && powerCooldown[0] == 0) {
+            powerActive[0] = true;
+            powerCooldown[0] = 8;
+        }
+
         // Controls for Beat-Up
         if (actType == 1) { 
             if (currentNode.GetComponent<nodeScript>().nodeType == 4) { 
@@ -362,6 +388,8 @@ public class playerScript : MonoBehaviour {
                 if (currentNode.GetComponent<nodeScript>().nodeType == 6) { 
                     stop = 0;
                     failedAct = true;
+                    gameData[0] = 10001;
+                    gameData[1] = 3;
                 }
             }
         }
@@ -385,21 +413,17 @@ public class playerScript : MonoBehaviour {
             if (!wrongInput) {
                 //# if: plyr stopped in front of the current door node
                 if (stop == 10) {
-                    int currentDoorIth = nodes - 2;     //// start from 0-th element
-                    //// push
+                    int currentDoorIth = nodes - 2;
                     if (Input.GetKeyDown("left shift")) {
                         if (gameData[4 + currentDoorIth] == 0) 
-                            stop = 0;   //// move player again if correct key is pressed
-                        else {  //# pressed wrong key
-                                //# the interaction will be the shaking of the door.
+                            stop = 0;
+                        else {
                             gameData[0] = 10000 + currentDoorIth;
                             gameData[1] = 0;
                             wrongInput = true;
                             audioManagerScript.instance.playfxSound(12);
                         }
-                    }
-                    //// pull
-                    else if (Input.GetKeyDown("right shift")) {
+                    } else if (Input.GetKeyDown("right shift")) {
                         if (gameData[4 + currentDoorIth] == 1) 
                             stop = 0;
                         else {  //# pressed wrong key
@@ -410,7 +434,6 @@ public class playerScript : MonoBehaviour {
                             audioManagerScript.instance.playfxSound(12);
                         }
                     }
-
                     //// use Code {10002, 0} to interact with 2nd element of the act
                     //// <int>nodes is ++ when each act passes.
                     //// nodes count starts from 1. And the initial currentNode is the 1st node(type 0).
@@ -426,51 +449,38 @@ public class playerScript : MonoBehaviour {
                         int[] feedback = { 0 };
                         minigameOverheadScript.instance.miniFeedback(feedback);
                     }
-                }
-
-                //# else: plyr is moving toward the next door node
-                else {
+                } else {
                     if (doorOpening == false) {
                         if (warned == false) {
-                            if (nextNode.GetComponent<nodeScript>().nodeType == 10) {
-                                //// set warning if the door is at close distance to player
+                            if (nextNode.GetComponent<nodeScript>().nodeType == 10)
                                 if (Vector3.Distance(nextNode.transform.position, transform.position) < 7.0f)
                                     warned = true;
-                            }
-                        }
-                        else {
-                            int currentDoorIth = nodes - 1;    //// the door currently ahead (start from 0-th)
-                            //// push
+                        } else {
+                            int currentDoorIth = nodes - 1;
                             if (Input.GetKeyDown("left shift")) {
                                 if (gameData[4 + currentDoorIth] == 0) 
                                     doorOpening = true;
-                                else {  //# pressed wrong key
-                                        //# the interaction will be the shaking of the door.
+                                else {
                                     gameData[0] = 10000 + currentDoorIth;
                                     gameData[1] = 0;
                                     wrongInput = true;
                                     audioManagerScript.instance.playfxSound(12);
                                 }
                             }
-                            //// pull
                             else if (Input.GetKeyDown("right shift")) {
                                 if (gameData[4 + currentDoorIth] == 1)
                                     doorOpening = true;
-                                else {  //# pressed wrong key
-                                        //# the interaction will be the shaking of the door.
+                                else {
                                     gameData[0] = 10000 + currentDoorIth;
                                     gameData[1] = 0;
                                     wrongInput = true;
                                     audioManagerScript.instance.playfxSound(12);
                                 }
                             }
-
                             if (doorOpening == true) {
                                 // Code {1xxxx, 0} - The player wishes to interact with the data%10000th element of the act's interactable obstacles
                                 gameData[0] = 10000 + currentDoorIth;
                                 gameData[1] = 0;
-
-                                //# for scoring. feedback data is meaningless.
                                 int[] feedback = { 0 };
                                 minigameOverheadScript.instance.miniFeedback(feedback);
                             }

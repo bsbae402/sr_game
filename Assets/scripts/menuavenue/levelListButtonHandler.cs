@@ -29,8 +29,10 @@ public class levelListButtonHandler : MonoBehaviour {
         if (levelListScript.instance.levelSelected()) {
             GameObject level = levelListScript.instance.getLevel();
             DontDestroyOnLoad(level);
+            /*GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
+                loadAppear(level.GetComponent<levelInitScript>().sceneName);*/
             GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
-                loadAppear(level.GetComponent<levelInitScript>().sceneName);
+                loadAppear("Cutscene");
             audioManagerScript.instance.playfxSound(8);
         }
     }

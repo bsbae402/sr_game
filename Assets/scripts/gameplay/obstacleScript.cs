@@ -30,6 +30,8 @@ public class obstacleScript : MonoBehaviour {
             GetComponent<Animator>().SetBool("Destroyed", true);
             removing = true;
             StartCoroutine(die());
+        } else if (actType == 3) {
+            GetComponent<carSpawnerScript>().active = false;
         } else if (actType == 4) { 
             if (obstacleType == 0) {
                 GetComponent<Animator>().SetBool("Hit", true);
@@ -69,6 +71,10 @@ public class obstacleScript : MonoBehaviour {
         yield return new WaitForSeconds(1f);
         Destroy(gameObject);
     }
+    IEnumerator die(float time) {
+        yield return new WaitForSeconds(time);
+        Destroy(gameObject);
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate() {
@@ -78,8 +84,12 @@ public class obstacleScript : MonoBehaviour {
                     transform.localPosition += new Vector3(0, 0.1f, 0.3f);
                     transform.RotateAround(Vector3.zero, Vector3.right, 20 * Time.deltaTime);
                     return;
+                } else if (obstacleType == 2) {
+                    transform.localPosition += new Vector3(0, 0.04f, 0.5f);
+                    GetComponent<Animator>().SetBool("Wrecked", true);
+                    return;
                 }
-                transform.localPosition += new Vector3(0, 0.02f, 0.5f);
+                transform.localPosition += new Vector3(0, 0.04f, 0.5f);
                 transform.Rotate(new Vector3(0f, 0f, 20f));
                 return;
             }

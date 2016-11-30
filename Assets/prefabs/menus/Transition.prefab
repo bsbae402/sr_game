@@ -203,6 +203,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bouncer: {x: 0.04, y: 0.04}
+  picture: LoadingPicture
   anim: 1
 --- !u!114 &114000010594479076
 MonoBehaviour:
@@ -320,6 +321,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bouncer: {x: 0.04, y: 0.04}
+  picture: 
   anim: 0
 --- !u!114 &114000011395280190
 MonoBehaviour:

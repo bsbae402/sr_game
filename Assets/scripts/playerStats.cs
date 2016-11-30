@@ -8,6 +8,18 @@ public class playerStats : MonoBehaviour {
 
     public int money;
 
+    /*****POWER TYPES*******
+    0 = Four of a Kind
+    1 = Missing Power
+    2 = Determination
+    3 = Len the Doggo : I wish I had time to implement this.
+    ***********************/
+    [HideInInspector]
+    public bool[] powers;
+    [HideInInspector]
+    public bool firstTimePower;
+    public bool firstTime;
+
     [HideInInspector]
     public bool updateNeeded = false;
 
@@ -21,6 +33,9 @@ public class playerStats : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         money = 0;
+        powers = new bool[4];
+        firstTime = true;
+        firstTimePower = false;
         DontDestroyOnLoad(gameObject);
 	}
 	
@@ -33,6 +48,12 @@ public class playerStats : MonoBehaviour {
         audioManagerScript.instance.playfxSound(10);
         yield return new WaitForSeconds(1f);
         Destroy(GameObject.FindGameObjectWithTag("perf"));
+    }
+
+    public void forceMoney(int amount) {
+        money += amount;
+        GameObject.FindGameObjectWithTag("money").GetComponent<Text>().text = "" + money;
+        audioManagerScript.instance.playfxSound(10);
     }
 
 	// Update is called once per frame

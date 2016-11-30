@@ -15,7 +15,14 @@ public class UIHealthScript : MonoBehaviour {
     }
 
     public void hit(int damage) {
+        if (health - damage <= 0 && playerScript.instance.powerActive[2]) {
+            health = 50;
+            playerScript.instance.powerActive[2] = false;
+            return;
+        }
         health -= damage;
+        if (health < 0)
+            health = 0;
     }
 
     // PURPOSELY USED Update()

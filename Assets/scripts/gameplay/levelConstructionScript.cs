@@ -49,8 +49,7 @@ public class levelConstructionScript : MonoBehaviour {
         // Grabs level data to generate level
         levelData = GameObject.FindGameObjectWithTag("levelInit");
         if (levelData == null) {
-            GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
-                loadAppear("MenuAvenue");
+            StartCoroutine(leaveLevel());
             Debug.Log("Error loading level data.");
             return;
         }
@@ -58,6 +57,11 @@ public class levelConstructionScript : MonoBehaviour {
         tiles = new Transform[tileData.Length + 1];
         constructLevel();
 	}
+    IEnumerator leaveLevel() {
+        yield return new WaitForSecondsRealtime(6f);
+        GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
+            loadAppear("MenuAvenue");
+    }
 	
     // Places tiles onto the scene
     void constructLevel() { 
@@ -83,6 +87,12 @@ public class levelConstructionScript : MonoBehaviour {
         yield return new WaitForSeconds(1f);
         // Don't forget to destroy all preserved but used game objects to prevent overuse of memory
         Destroy(levelData);
+        // Show powerup tutorial if needed
+        if (playerStats.instance != null) {
+            if (playerStats.instance.firstTime && playerStats.instance.firstTimePower)
+                minigameOverheadScript.instance.showPowerTutorial();
+            playerStats.instance.firstTime = false;
+        }
     }
 
     // Used during constructLevel to properly choose a tile to place
@@ -169,19 +179,28 @@ public class levelConstructionScript : MonoBehaviour {
         } else {
             speed = 0f;
         }
-        
+
         // GameData is completely arbitrary in the way that it'll pass data to levelConstruction
         // I doubt I'll even remember what it does.
         // Code {1xxxx, 0} - The player wishes to interact with the data%10000th element of the act's interactable obstacles
         // Code {1xxxx, 1} - The player wishes to remove the data%10000th element of the act's interactable obstacles
         // Code {1xxxx, 2} - Same as previous, but the player failed the stage
+        // Code {1xxxx, 3} - The player wishes to interact with all the elements of and after x of the act's interactable obstacles
         // Code {2xxxx, y} - Interact with data%10000th element of act's interactable obstacles and add y to score
         if (playerScript.instance.gameData[0] / 10000 == 1) {
-            tiles[playerScript.instance.currentAct].GetComponent<actScript>().
-                interactWithObstacle(playerScript.instance.gameData[0] % 10000);
-            if (playerScript.instance.gameData[1] >= 1) {
+            if (playerScript.instance.gameData[1] == 3) {
+                int n = tiles[playerScript.instance.currentAct].GetComponent<actScript>().interactiveObstacles.Length;
+                for (int i = playerScript.instance.gameData[0] % 10000; i < n; i++) {
+                    tiles[playerScript.instance.currentAct].GetComponent<actScript>().
+                        interactWithObstacle(i);
+                }
+            } else {
                 tiles[playerScript.instance.currentAct].GetComponent<actScript>().
-                    removeObstacle(playerScript.instance.gameData[0] % 10000);
+                    interactWithObstacle(playerScript.instance.gameData[0] % 10000);
+                if (playerScript.instance.gameData[1] >= 1) {
+                    tiles[playerScript.instance.currentAct].GetComponent<actScript>().
+                        removeObstacle(playerScript.instance.gameData[0] % 10000);
+                }
             }
         } else if (playerScript.instance.gameData[0] / 20000 == 1) {
             tiles[playerScript.instance.currentAct].GetComponent<actScript>().

@@ -60,6 +60,8 @@ public class menuTransitionScript : MonoBehaviour {
             }
             slides[i].GetComponent<CanvasGroup>().alpha = 1;
             slides[i].transform.SetAsLastSibling();
+            if (i == slides.Length - 1)
+                slides[i].GetComponent<menuTransitionBouncerScript>().changeAnim(Random.Range(1, 4));
         }
         yield return new WaitForSeconds(3f);
         AsyncOperation async = SceneManager.LoadSceneAsync(scene);
