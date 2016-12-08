@@ -13,6 +13,7 @@ public class levelInitScript : MonoBehaviour {
     public string levelName;
     public string sceneName; // Removing later; kept for testing
     public string description;
+    public int musicNo;
     public int[] obstacles;
     public float stageSpeed = 1;
 

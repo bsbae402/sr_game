@@ -18,6 +18,8 @@ public class UIHealthScript : MonoBehaviour {
         if (health - damage <= 0 && playerScript.instance.powerActive[2]) {
             health = 50;
             playerScript.instance.powerActive[2] = false;
+            playerScript.instance.UI.requestPowerupImage(2);
+            audioManagerScript.instance.playfxSound(15);
             return;
         }
         health -= damage;
@@ -36,6 +38,13 @@ public class UIHealthScript : MonoBehaviour {
             rotateCounter = 0;
         }
         rotateCounter++;
+
+        if (playerScript.instance.powerActive[1]) {
+            if (playerScript.instance.actType == 1 || playerScript.instance.actType == 2 || playerScript.instance.actType == 4) {
+                GetComponent<Image>().sprite = Resources.Load<Sprite>("VelvetUIHeadOni");
+                return;
+            }
+        }
 
         // When Velvet loses health her appearance will change
         if( health >= 1000 )

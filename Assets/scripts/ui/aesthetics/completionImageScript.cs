@@ -26,7 +26,6 @@ public class completionImageScript : MonoBehaviour {
     IEnumerator complete() {
         yield return new WaitForSeconds(1.5f);
         GetComponent<CanvasGroup>().alpha = 0;
-        yield return new WaitForSeconds(3f);
         spawned = false;
     }
     void Update () {

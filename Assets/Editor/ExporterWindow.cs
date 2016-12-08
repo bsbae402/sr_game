@@ -78,7 +78,6 @@ namespace mlv
         static Color noStatic = Color.magenta;//new Color( 255f/255f, 70f/255f, 0f/255f, 1f );//new Color(11f / 255f, 47f / 255f, 142f / 255f, 1f);
         static Color noParent = Color.blue;//new Color(255f / 255f, 70f / 255f, 0f / 255f, 1f);
         static Color noExport = new Color(216f / 255f, 44f / 255f, 16f / 255f);
-        static Color exportOk = Color.green;
         static void CopyArrayToSerialized( SerializedProperty dest, GameObject[] sources )
         {
             if( dest.arraySize != sources.Length )
@@ -266,7 +265,6 @@ namespace mlv
 
         bool LayerUI( Exporter owner, Exporter.LayerData layerData, SerializedObject serializedExport, SerializedProperty serializedLayerData  )
         {
-            Color defaultColor = GUI.color;
             Color defaultBackColor = GUI.backgroundColor;
             Color defaultContentColor = GUI.contentColor;
 

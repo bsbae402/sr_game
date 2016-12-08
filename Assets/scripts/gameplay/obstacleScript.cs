@@ -82,7 +82,7 @@ public class obstacleScript : MonoBehaviour {
             if (removing) {
                 if (obstacleType == 1) {
                     transform.localPosition += new Vector3(0, 0.1f, 0.3f);
-                    transform.RotateAround(Vector3.zero, Vector3.right, 20 * Time.deltaTime);
+                    transform.RotateAround(transform.position, Vector3.right, 20 * Time.deltaTime);
                     return;
                 } else if (obstacleType == 2) {
                     transform.localPosition += new Vector3(0, 0.04f, 0.5f);

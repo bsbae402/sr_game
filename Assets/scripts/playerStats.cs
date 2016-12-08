@@ -16,9 +16,6 @@ public class playerStats : MonoBehaviour {
     ***********************/
     [HideInInspector]
     public bool[] powers;
-    [HideInInspector]
-    public bool firstTimePower;
-    public bool firstTime;
 
     [HideInInspector]
     public bool updateNeeded = false;
@@ -34,15 +31,13 @@ public class playerStats : MonoBehaviour {
 	void Start () {
         money = 0;
         powers = new bool[4];
-        firstTime = true;
-        firstTimePower = false;
         DontDestroyOnLoad(gameObject);
 	}
 	
     IEnumerator updateStats() {
-        yield return new WaitForSeconds(6f);
         if (GameObject.FindGameObjectWithTag("perf") == null)
             yield break;
+        yield return new WaitForSeconds(GameObject.FindGameObjectWithTag("perf").GetComponent<performanceScript>().score / 10000f + 3.8f);
         money += GameObject.FindGameObjectWithTag("perf").GetComponent<performanceScript>().score / 1000;
         GameObject.FindGameObjectWithTag("money").GetComponent<Text>().text = "" + money;
         audioManagerScript.instance.playfxSound(10);

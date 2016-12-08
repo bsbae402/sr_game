@@ -30,6 +30,8 @@ public class levelListScript : MonoBehaviour {
         scroll = 0;
         selected = -1;
         needUpdate = true;
+        if (audioManagerScript.instance != null)
+            audioManagerScript.instance.playMusic(0);
 	}
 
     // Functions that can be called by buttons to ask for an update

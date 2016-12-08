@@ -129,8 +129,11 @@ public class playerScript : MonoBehaviour {
                 powerActive[i] = false;
             }
         }
-        if (powerCooldown[0] == 4 && powerActive[0])
+        if (powerCooldown[0] == 4 && powerActive[0]) {
             getHit(-100, 0f, false);
+            UI.requestPowerupImage(0);
+            audioManagerScript.instance.playfxSound(15);
+        }
     }
 
     // Used to stop the jumping mechanic after a small amount of time
@@ -163,7 +166,7 @@ public class playerScript : MonoBehaviour {
     public void finishAct() {
         if (actType < 0)
             return;
-        if (UI.timeLeft == 0 || failedAct) {
+        if (UI.timeLeft <= 0 || failedAct) {
             UI.requestCompletionImage(-1);
             UI.hit(20);
             audioManagerScript.instance.playfxSound(11);
@@ -213,6 +216,8 @@ public class playerScript : MonoBehaviour {
                         if (cameraScript.instance.transform.localPosition.y < 3.2f) {
                             if (!powerActive[1])
                                 getHit(10);
+                            else
+                                audioManagerScript.instance.playfxSound(14);
                             // Code 10000, 0 : Wreck current act's interactable obstacle
                             gameData[0] = 10000 + nodes - 2;
                             gameData[1] = 0;
@@ -241,6 +246,8 @@ public class playerScript : MonoBehaviour {
                             gameData[nodes + 2] % 10 == 1 && lane == 1) {
                             if (!powerActive[1])
                                 getHit(10);
+                            else
+                                audioManagerScript.instance.playfxSound(14);
                             // Code 10000, 0 : Shake current act's interactable obstacle
                             gameData[0] = 10000 + nodes - 2;
                             gameData[1] = 0;
@@ -333,7 +340,6 @@ public class playerScript : MonoBehaviour {
                         numOfOpened = nodes - 2;
                     else 
                         numOfOpened = nodes - 1;
-                    int sdf = minigameOverheadScript.instance.score.GetComponent<performanceScript>().score;
                     minigameOverheadScript.instance.score.GetComponent<performanceScript>().score -= numOfOpened * 100;
                     actScript normDrActScr = levelConstructionScript.instance.tiles[currentAct].GetComponent<actScript>();
                     int numOfDoors = normDrActScr.interactiveObstacles.Length;
@@ -342,7 +348,6 @@ public class playerScript : MonoBehaviour {
                         doorObsScr.interact();
                     }
                     GameObject actExitNode = currentNode;
-                    //# caution: infinite loop possible!
                     while(actExitNode.GetComponent<nodeScript>().nodeType != 1)
                         actExitNode = actExitNode.GetComponent<nodeScript>().nextNode;
                     nextNode = actExitNode;
@@ -388,8 +393,8 @@ public class playerScript : MonoBehaviour {
                 if (currentNode.GetComponent<nodeScript>().nodeType == 6) { 
                     stop = 0;
                     failedAct = true;
-                    gameData[0] = 10001;
-                    gameData[1] = 3;
+                    //gameData[0] = 10001;
+                    //gameData[1] = 3;
                 }
             }
         }

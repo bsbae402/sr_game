@@ -18,7 +18,6 @@ public class powerListButtonScript : MonoBehaviour {
             for (int i = 0; i < playerStats.instance.powers.Length; i++)
                 playerStats.instance.powers[i] = false;
             playerStats.instance.powers[powerListScript.instance.selected] = true;
-            playerStats.instance.firstTimePower = true;
         }
     }
 }

@@ -66,7 +66,11 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 5ba6617058f959549b205bc88a7f5ae5, type: 3}
   - {fileID: 8300000, guid: bd37a9f78eab4d74d8fe52b758a30b8d, type: 3}
   - {fileID: 8300000, guid: 012bd3636f33f784e9bfc9ff6c9fa948, type: 3}
+  - {fileID: 8300000, guid: a7c026ac314838b4f90199b0ea1c35a3, type: 3}
+  - {fileID: 8300000, guid: 1edf7c5580984ad43a52f6c3ba660839, type: 3}
   audiomusic:
   - {fileID: 8300000, guid: 7f45b19bc9569d445a0982b5524341c6, type: 3}
+  - {fileID: 8300000, guid: 3aaad9f7ca3e81241824d9a0b8533015, type: 3}
+  - {fileID: 8300000, guid: 77dd6331dcc1f2e45af3104f2ba7fb0a, type: 3}
   audioTransform: {fileID: 4000011142311768, guid: 570f9fa014fdcfd418bcd9a05ea1a2e5,
     type: 2}

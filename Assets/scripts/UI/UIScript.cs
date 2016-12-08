@@ -3,13 +3,13 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class UIScript : MonoBehaviour {
-
-    // We'll implement this later
+    
     UIHealthScript health;
     public GameObject TimeText;
     public GameObject ScoreText;
     public GameObject Overhead;
     completionImageScript Completion;
+    powerupImageScript Powerup;
 
     [HideInInspector]
     public float timeLeft;
@@ -30,6 +30,7 @@ public class UIScript : MonoBehaviour {
         decreaseTime = true;
         health = GetComponentInChildren<UIHealthScript>();
         Completion = GetComponentInChildren<completionImageScript>();
+        Powerup = GetComponentInChildren<powerupImageScript>();
     }
 
     public void hit(int damage) {
@@ -40,18 +41,16 @@ public class UIScript : MonoBehaviour {
         return health.health;
     }
 
-    public void requestCompletionImage(int actType) { 
-        switch (actType) {
-            case -1:
-                Completion.spawnCompletion("VelvetMinigameFailed");
-                break;
-            case 0:
-                Completion.spawnCompletion("VelvetMinigameComplete-0");
-                break;
-            case 1:
-                Completion.spawnCompletion("VelvetMinigameComplete-1");
-                break;
+    public void requestCompletionImage(int actType) {
+        if (actType < 0)
+            Completion.spawnCompletion("VelvetMinigameFailed");
+        else {
+            Completion.spawnCompletion("VelvetMinigameComplete-" + actType);
         }
+    }
+
+    public void requestPowerupImage(int power) { 
+        Powerup.spawnPowerup("Powerup-" + power);
     }
 
     // This is called by the player to update the text for the score

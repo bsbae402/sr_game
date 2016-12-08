@@ -58,7 +58,7 @@ public class levelConstructionScript : MonoBehaviour {
         constructLevel();
 	}
     IEnumerator leaveLevel() {
-        yield return new WaitForSecondsRealtime(6f);
+        yield return new WaitForSecondsRealtime(3f);
         GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
             loadAppear("MenuAvenue");
     }
@@ -81,6 +81,8 @@ public class levelConstructionScript : MonoBehaviour {
     // Finally starts the level with the specified game speed
     IEnumerator levelStart() {
         yield return new WaitForSeconds(1f);
+        if (audioManagerScript.instance != null)
+            audioManagerScript.instance.playMusic(levelData.GetComponent<levelInitScript>().musicNo);
         levelSpeed = levelData.GetComponent<levelInitScript>().stageSpeed;
         Time.timeScale = levelSpeed;
         started = true;
@@ -89,9 +91,8 @@ public class levelConstructionScript : MonoBehaviour {
         Destroy(levelData);
         // Show powerup tutorial if needed
         if (playerStats.instance != null) {
-            if (playerStats.instance.firstTime && playerStats.instance.firstTimePower)
+            if (playerStats.instance.powers[0])
                 minigameOverheadScript.instance.showPowerTutorial();
-            playerStats.instance.firstTime = false;
         }
     }
 
@@ -116,9 +117,13 @@ public class levelConstructionScript : MonoBehaviour {
             if (validTiles[i] == t)
                 found = true;
         if (!found)
-            t = -1;
-        if (t == -1) {
-            t = validTiles[Random.Range(1, validTiles.Length)];
+            t = -2;
+        if (t < 0) {
+            if (t < -1)
+                while (t < 0 || (t >= 30 && t < 40))
+                    t = validTiles[Random.Range(1, validTiles.Length)];
+            else
+                t = validTiles[Random.Range(1, validTiles.Length)];
             variant = t % 10;
         }
         if (variant == 0)
@@ -138,7 +143,9 @@ public class levelConstructionScript : MonoBehaviour {
     IEnumerator finishStage() {
         Time.timeScale = 1;
         yield return new WaitForSeconds(3f);
-        if(playerStats.instance != null)
+        if (audioManagerScript.instance != null)
+            audioManagerScript.instance.stopMusic();
+        if (playerStats.instance != null)
             playerStats.instance.updateNeeded = true;
         GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
             loadAppear("MenuAvenue");
@@ -146,6 +153,8 @@ public class levelConstructionScript : MonoBehaviour {
     IEnumerator failStage() { 
         Time.timeScale = 1;
         yield return new WaitForSeconds(1f);
+        if (audioManagerScript.instance != null)
+            audioManagerScript.instance.stopMusic();
         if (playerStats.instance != null)
             playerStats.instance.updateNeeded = true;
         Destroy(GameObject.FindGameObjectWithTag("perf"));
