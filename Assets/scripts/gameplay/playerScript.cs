@@ -82,12 +82,12 @@ public class playerScript : MonoBehaviour {
         if (playerStats.instance != null) {
             powerActive = new bool[playerStats.instance.powers.Length];
             powerCooldown = new int[playerStats.instance.powers.Length];
-            if (playerStats.instance.powers[1]) {
-                powerActive[1] = true;
-                powerCooldown[1] = 10000000;
-            } else if (playerStats.instance.powers[2]) {
-                powerActive[2] = true;
-                powerCooldown[2] = 10000000;
+            for(int i = 1; i < powerActive.Length; i++) {
+                if (playerStats.instance.powers[i]) {
+                    powerActive[i] = true;
+                    powerCooldown[i] = 10000000;
+                    break;
+                }   
             }
         } else {
             powerActive = new bool[20];
@@ -105,6 +105,8 @@ public class playerScript : MonoBehaviour {
     public void getHit(int damage, float invincibleTime, bool strong) {
         if (invincible)
             return;
+        if (powerActive[3])
+            damage /= 2;
         hit = strong;
         invincible = true;
         StartCoroutine(invincibility(invincibleTime));

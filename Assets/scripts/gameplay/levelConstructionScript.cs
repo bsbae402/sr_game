@@ -34,6 +34,8 @@ public class levelConstructionScript : MonoBehaviour {
     [HideInInspector]
     public float speed = 0.4f;
 
+    bool credits;
+
     void Awake() {
         if (instance == null)
             instance = this;
@@ -53,6 +55,7 @@ public class levelConstructionScript : MonoBehaviour {
             Debug.Log("Error loading level data.");
             return;
         }
+        credits = levelData.GetComponent<levelInitScript>().credits;
         tileData = levelData.GetComponent<levelInitScript>().obstacles;
         tiles = new Transform[tileData.Length + 1];
         constructLevel();
@@ -147,8 +150,12 @@ public class levelConstructionScript : MonoBehaviour {
             audioManagerScript.instance.stopMusic();
         if (playerStats.instance != null)
             playerStats.instance.updateNeeded = true;
-        GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
-            loadAppear("MenuAvenue");
+        if (credits)
+            GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
+                loadAppear("Credits");
+        else
+            GameObject.FindGameObjectWithTag("loader").GetComponent<menuTransitionScript>().
+                loadAppear("MenuAvenue");
     }
     IEnumerator failStage() { 
         Time.timeScale = 1;
@@ -249,6 +256,8 @@ public class levelConstructionScript : MonoBehaviour {
                 minigameOverheadScript.instance.
                     newAct(tiles[act + 1].GetComponent<actScript>().actType, 
                     tiles[act + 1].GetComponent<actScript>().gameData);
+                if (playerScript.instance.powerActive[3])
+                    tiles[act + 1].GetComponent<actScript>().timeLimit += 2;
                 playerScript.instance.UI.timeLeft = tiles[act + 1].GetComponent<actScript>().timeLimit;
                 if (tiles[act + 1].GetComponent<actScript>().tutorial)
                     minigameOverheadScript.instance.showTutorial(tiles[act + 1].GetComponent<actScript>().actType);

@@ -12,7 +12,7 @@ public class playerStats : MonoBehaviour {
     0 = Four of a Kind
     1 = Missing Power
     2 = Determination
-    3 = Len the Doggo : I wish I had time to implement this.
+    3 = Easy Mode
     ***********************/
     [HideInInspector]
     public bool[] powers;

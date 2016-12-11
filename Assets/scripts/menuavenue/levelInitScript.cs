@@ -16,6 +16,7 @@ public class levelInitScript : MonoBehaviour {
     public int musicNo;
     public int[] obstacles;
     public float stageSpeed = 1;
+    public bool credits;
 
 	// Use this for initialization
 	void Start () {
