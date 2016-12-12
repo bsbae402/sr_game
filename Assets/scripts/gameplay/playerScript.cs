@@ -170,6 +170,7 @@ public class playerScript : MonoBehaviour {
             return;
         if (UI.timeLeft <= 0 || failedAct) {
             UI.requestCompletionImage(-1);
+            powerActive[0] = false;
             UI.hit(20);
             audioManagerScript.instance.playfxSound(11);
         } else {
@@ -365,6 +366,8 @@ public class playerScript : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Tab) && powerCooldown[0] == 0) {
             powerActive[0] = true;
             powerCooldown[0] = 8;
+            UI.requestPowerupImage(0);
+            audioManagerScript.instance.playfxSound(15);
         }
 
         // Controls for Beat-Up
