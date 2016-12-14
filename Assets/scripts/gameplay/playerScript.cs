@@ -150,9 +150,8 @@ public class playerScript : MonoBehaviour {
     // ONLY FOR SILENT CROSSING
     public IEnumerator stopPlayer(float time) {
         yield return new WaitForSeconds(time);
-        gameData[0] = 10000;
-        gameData[1] = 3;
-        stop = 0;
+        if (actType == 3)
+            stop = 0;
     }
 
     // Uses an unused portion of the gameData to record information for the player
@@ -233,8 +232,6 @@ public class playerScript : MonoBehaviour {
                     break;
                     case 6: stop = -1; break;
                     case 7:
-                        gameData[0] = 10000;
-                        gameData[1] = 3;
                         if (failedAct) {
                             getHit(30);
                         } else { 
@@ -398,8 +395,7 @@ public class playerScript : MonoBehaviour {
                 if (currentNode.GetComponent<nodeScript>().nodeType == 6) { 
                     stop = 0;
                     failedAct = true;
-                    //gameData[0] = 10001;
-                    //gameData[1] = 3;
+                    StopCoroutine("stopPlayer");
                 }
             }
         }
