@@ -1,1 +1,3 @@
-This is going to suck.
+2016 Fall semester
+CSE 381
+SaleRush
